@@ -41,17 +41,10 @@ std::unique_ptr<GEngine> GEngine::Create()
 
 void GEngine::RenderDebugTriangle()
 {
-    bool isOk = mEngineResources->CatchErrors([&] {
-        mEngineResources->UseProgram(GShaderKeyDebug, [&] {
-            mEngineResources->TriangleBuffer()->Bind(
-                [&] { glDrawArrays(GL_TRIANGLES, 0, 3); });
-        });
+    mEngineResources->UseProgram(GShaderKeyDebug, [&] {
+        mEngineResources->TriangleBuffer()->Bind(
+            [&] { glDrawArrays(GL_TRIANGLES, 0, 3); });
     });
-
-    if (!isOk)
-    {
-        std::cerr << "Failed to render debug triangle" << std::endl;
-    }
 }
 
 void GEngine::RenderBlock(
