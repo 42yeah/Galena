@@ -1,0 +1,5 @@
+src/shaders/*.cpp
+src/shaders/*.h
+build
+compile_commands.json
+.clangd

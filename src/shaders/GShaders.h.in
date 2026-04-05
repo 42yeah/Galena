@@ -1,0 +1,5 @@
+#pragma once
+
+namespace galena {
+
+${GALENA_SHADER_SRC_HEADER}}  // namespace galena

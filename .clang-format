@@ -1,0 +1,17 @@
+---
+BasedOnStyle: LLVM
+IndentWidth: 4
+UseTab: Never
+AccessModifierOffset: -4
+IndentAccessModifiers: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterClass: true
+    AfterFunction: true
+    AfterControlStatement: true
+    AfterEnum: true
+    AfterStruct: true
+    AfterNamespace: false
+AlignAfterOpenBracket: DontAlign
+ContinuationIndentWidth: 4
+SpacesBeforeTrailingComments: 2
