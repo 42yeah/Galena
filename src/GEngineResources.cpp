@@ -34,15 +34,16 @@ std::unique_ptr<GEngineResources> GEngineResources::Create(
         shaders[it.first] = std::move(shader);
     }
 
-    std::unordered_map<std::string, std::unique_ptr<GTexture>> textures;
+    std::unordered_map<uint32_t, std::unique_ptr<GTexture>> textures;
 
-    for (const std::string &texturePath : desc.textures)
+    for (const std::pair<uint32_t, const std::string &> texturePath :
+        desc.textures)
     {
-        std::unique_ptr<GImage> image = LoadImageFromPath(texturePath);
+        std::unique_ptr<GImage> image = LoadImageFromPath(texturePath.second);
 
         if (!image)
         {
-            std::cerr << "Cannot load image from path: " << texturePath
+            std::cerr << "Cannot load image from path: " << texturePath.second
                       << std::endl;
         }
 
@@ -52,10 +53,11 @@ std::unique_ptr<GEngineResources> GEngineResources::Create(
 
         if (!texture)
         {
-            std::cerr << "Cannot create texture: " << texturePath << std::endl;
+            std::cerr << "Cannot create texture: " << texturePath.second
+                      << std::endl;
         }
 
-        textures[texturePath] = std::move(texture);
+        textures[texturePath.first] = std::move(texture);
     }
 
     const float triangleData[] = {

@@ -26,7 +26,7 @@ int32_t main()
 
     GEngineDesc desc;
 
-    std::unique_ptr<GEngine> engine = GEngine::Create(desc;
+    std::unique_ptr<GEngine> engine = GEngine::Create(desc);
     if (!engine)
         return 1;
 

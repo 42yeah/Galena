@@ -1,13 +1,14 @@
 #pragma once
 
 #include <string>
-#include <vector>
+#include <unordered_map>
+#include <cstdint>
 
 namespace galena {
 
 struct GEngineDesc
 {
-    std::vector<std::string> textures;
+    std::unordered_map<uint32_t, std::string> textures;
 };
 
 }  // namespace galena

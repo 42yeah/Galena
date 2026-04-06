@@ -61,8 +61,8 @@ void GEngine::RenderDebugTriangle()
     });
 }
 
-void GEngine::RenderBlock(
-    uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+void GEngine::RenderSprite(uint32_t spriteId, uint32_t x, uint32_t y,
+    uint32_t w, uint32_t h, uint32_t sx, uint32_t sy, uint32_t sw, uint32_t sh)
 {
 }
 

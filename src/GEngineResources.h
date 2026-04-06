@@ -13,6 +13,8 @@
 #include <memory>
 #include <unordered_map>
 
+#include <cstdint>
+
 namespace galena {
 
 /* Distinction between engine data and engine resource:
@@ -26,7 +28,7 @@ class GEngineResources
 public:
     GEngineResources(GEngineData &&engineData,
         std::unordered_map<EGShaderKey, std::unique_ptr<GShader>> shaders,
-        std::unordered_map<std::string, std::unique_ptr<GTexture>> textures,
+        std::unordered_map<uint32_t, std::unique_ptr<GTexture>> textures,
         std::unique_ptr<GHwBuffer> triangleBuffer,
         std::unique_ptr<GHwBuffer> quadBuffer)
         : mEngineData(std::move(engineData)), mShaders(std::move(shaders)),
@@ -69,7 +71,7 @@ public:
     const GEngineData mEngineData;
 
     const std::unordered_map<EGShaderKey, std::unique_ptr<GShader>> mShaders;
-    const std::unordered_map<std::string, std::unique_ptr<GTexture>> mTextures;
+    const std::unordered_map<uint32_t, std::unique_ptr<GTexture>> mTextures;
 
     const std::unique_ptr<GHwBuffer> mTriangleBuffer;
     const std::unique_ptr<GHwBuffer> mQuadBuffer;

@@ -25,7 +25,8 @@ public:
 
     void RenderDebugTriangle();
 
-    void RenderBlock(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+    void RenderSprite(uint32_t spriteId, uint32_t x, uint32_t y, uint32_t w,
+        uint32_t h, uint32_t sx, uint32_t sy, uint32_t sw, uint32_t sh);
 
 private:
     const std::unique_ptr<GEngineResources> mEngineResources;
