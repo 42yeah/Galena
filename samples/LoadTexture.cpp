@@ -1,4 +1,5 @@
 #include "Galena/GEngine.h"
+#include "Galena/GEngineDesc.h"
 #include <cstdint>
 
 #include <emscripten/html5.h>
@@ -9,10 +10,7 @@ using namespace galena;
 
 std::unique_ptr<GEngine> gEngine = nullptr;
 
-void Loop()
-{
-    gEngine->Clear(1.0f, 0.5f, 0.0f, 1.0f);
-}
+void Loop() { gEngine->Clear(1.0f, 0.5f, 0.0f, 1.0f); }
 
 int32_t main()
 {
@@ -26,7 +24,9 @@ int32_t main()
 
     emscripten_webgl_make_context_current(ctx);
 
-    std::unique_ptr<GEngine> engine = GEngine::Create();
+    GEngineDesc desc;
+
+    std::unique_ptr<GEngine> engine = GEngine::Create(desc;
     if (!engine)
         return 1;
 

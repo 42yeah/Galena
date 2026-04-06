@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GEngineDesc.h"
+
 #include <memory>
 
 #include <cstdint>
@@ -16,7 +18,7 @@ public:
     ~GEngine();
 
 public:
-    static std::unique_ptr<GEngine> Create();
+    static std::unique_ptr<GEngine> Create(const GEngineDesc &desc);
 
 public:
     void Clear(float r, float g, float b, float a);

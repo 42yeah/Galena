@@ -1,5 +1,5 @@
 #include "Galena/GEngine.h"
-#include "Galena/GVersion.h"
+#include "Galena/GEngineDesc.h"
 
 #include <GLES3/gl3.h>
 
@@ -30,12 +30,14 @@ int32_t main()
 
     emscripten_webgl_make_context_current(ctx);
 
-    std::unique_ptr<GEngine> engine = GEngine::Create();
+    GEngineDesc desc;
+
+    std::unique_ptr<GEngine> engine = GEngine::Create(desc);
 
     // Elevate it to global scope
     gEngine = std::move(engine);
 
     emscripten_set_main_loop(Loop, 0, true);
-    
+
     return 0;
 }

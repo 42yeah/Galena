@@ -3,6 +3,9 @@
 #include "GHwBuffer.h"
 #include "GShader.h"
 
+#include "GTexture.h"
+#include "Galena/GEngineDesc.h"
+
 #include <memory>
 #include <unordered_map>
 
@@ -12,7 +15,8 @@ namespace galena {
 
 GEngineResources::~GEngineResources() {}
 
-std::unique_ptr<GEngineResources> GEngineResources::Create()
+std::unique_ptr<GEngineResources> GEngineResources::Create(
+    const GEngineDesc &desc)
 {
     GEngineData data = GetEngineData();
 
@@ -28,6 +32,30 @@ std::unique_ptr<GEngineResources> GEngineResources::Create()
             return nullptr;
 
         shaders[it.first] = std::move(shader);
+    }
+
+    std::unordered_map<std::string, std::unique_ptr<GTexture>> textures;
+
+    for (const std::string &texturePath : desc.textures)
+    {
+        std::unique_ptr<GImage> image = LoadImageFromPath(texturePath);
+
+        if (!image)
+        {
+            std::cerr << "Cannot load image from path: " << texturePath
+                      << std::endl;
+        }
+
+        std::unique_ptr<GTexture> texture = GTexture::Create(*image,
+            GTextureFilterNearest, GTextureFilterNearest,
+            GTextureWrapModeRepeat, GTextureWrapModeRepeat);
+
+        if (!texture)
+        {
+            std::cerr << "Cannot create texture: " << texturePath << std::endl;
+        }
+
+        textures[texturePath] = std::move(texture);
     }
 
     const float triangleData[] = {
@@ -61,7 +89,8 @@ std::unique_ptr<GEngineResources> GEngineResources::Create()
         GHwBuffer::Create(quadData, sizeof(quadData), attribs);
 
     return std::make_unique<GEngineResources>(std::move(data),
-        std::move(shaders), std::move(triangleBuffer), std::move(quadBuffer));
+        std::move(shaders), std::move(textures), std::move(triangleBuffer),
+        std::move(quadBuffer));
 }
 
 }  // namespace galena

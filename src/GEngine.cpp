@@ -29,9 +29,10 @@ void GEngine::Clear(float r, float g, float b, float a)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-std::unique_ptr<GEngine> GEngine::Create()
+std::unique_ptr<GEngine> GEngine::Create(const GEngineDesc &desc)
 {
-    std::unique_ptr<GEngineResources> resources = GEngineResources::Create();
+    std::unique_ptr<GEngineResources> resources =
+        GEngineResources::Create(desc);
 
     if (!resources)
     {

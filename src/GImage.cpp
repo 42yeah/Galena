@@ -3,6 +3,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "external/stb_image.h"
 
+#include <fstream>
 #include <memory>
 
 namespace galena {
@@ -27,9 +28,22 @@ std::unique_ptr<GImage> LoadStbImage(const void *pData, size_t size)
     return image;
 }
 
-std::unique_ptr<GImage> LoadPngImage(const void *pData, size_t size)
+std::unique_ptr<GImage> LoadImageFromPath(const std::string &path)
 {
-    return LoadStbImage(pData, size);
+    std::ifstream reader(path, std::ios::binary);
+
+    if (!reader.good())
+        return nullptr;
+
+    reader.seekg(0, std::ios::end);
+    size_t size = reader.tellg();
+
+    reader.seekg(0, std::ios::beg);
+    std::unique_ptr<char[]> data(new char[size]);
+
+    reader.read(data.get(), size);
+
+    return LoadStbImage(data.get(), size);
 }
 
 }  // namespace galena

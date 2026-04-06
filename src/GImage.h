@@ -41,6 +41,6 @@ public:
     }
 };
 
-std::unique_ptr<GImage> LoadPngImage(const void *pData, size_t size);
+std::unique_ptr<GImage> LoadImageFromPath(const std::string &path);
 
 }  // namespace galena

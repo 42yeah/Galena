@@ -3,6 +3,9 @@
 #include "GEngineData.h"
 #include "GHwBuffer.h"
 #include "GShader.h"
+#include "GTexture.h"
+
+#include "Galena/GEngineDesc.h"
 
 #include <GLES3/gl3.h>
 
@@ -23,9 +26,11 @@ class GEngineResources
 public:
     GEngineResources(GEngineData &&engineData,
         std::unordered_map<EGShaderKey, std::unique_ptr<GShader>> shaders,
+        std::unordered_map<std::string, std::unique_ptr<GTexture>> textures,
         std::unique_ptr<GHwBuffer> triangleBuffer,
         std::unique_ptr<GHwBuffer> quadBuffer)
         : mEngineData(std::move(engineData)), mShaders(std::move(shaders)),
+          mTextures(std::move(textures)),
           mTriangleBuffer(std::move(triangleBuffer)),
           mQuadBuffer(std::move(quadBuffer))
     {
@@ -38,7 +43,7 @@ public:
     ~GEngineResources();
 
 public:
-    static std::unique_ptr<GEngineResources> Create();
+    static std::unique_ptr<GEngineResources> Create(const GEngineDesc &desc);
 
     GShader *Shader(EGShaderKey key) const { return mShaders.at(key).get(); }
 
@@ -64,6 +69,7 @@ public:
     const GEngineData mEngineData;
 
     const std::unordered_map<EGShaderKey, std::unique_ptr<GShader>> mShaders;
+    const std::unordered_map<std::string, std::unique_ptr<GTexture>> mTextures;
 
     const std::unique_ptr<GHwBuffer> mTriangleBuffer;
     const std::unique_ptr<GHwBuffer> mQuadBuffer;
