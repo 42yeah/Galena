@@ -1,9 +1,6 @@
 #include "Galena/GEngine.h"
-#include "Galena/GVersion.h"
+#include <cstdint>
 
-#include <GLES3/gl3.h>
-
-#include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
 #include <emscripten/html5_webgl.h>
 #include <memory>
@@ -14,8 +11,7 @@ std::unique_ptr<GEngine> gEngine = nullptr;
 
 void Loop()
 {
-    gEngine->Clear(1.0f, 0.0f, 1.0f, 1.0f);
-    gEngine->RenderDebugTriangle();
+    gEngine->Clear(1.0f, 0.5f, 0.0f, 1.0f);
 }
 
 int32_t main()
@@ -31,11 +27,12 @@ int32_t main()
     emscripten_webgl_make_context_current(ctx);
 
     std::unique_ptr<GEngine> engine = GEngine::Create();
+    if (!engine)
+        return 1;
 
-    // Elevate it to global scope
     gEngine = std::move(engine);
 
     emscripten_set_main_loop(Loop, 0, true);
-    
+
     return 0;
 }

@@ -2,6 +2,7 @@
 
 #include "GEngineData.h"
 #include "GHwBuffer.h"
+#include "GShader.h"
 
 #include <GLES3/gl3.h>
 
@@ -21,7 +22,7 @@ class GEngineResources
 {
 public:
     GEngineResources(GEngineData &&engineData,
-        std::unordered_map<EGShaderKey, GLuint> shaders,
+        std::unordered_map<EGShaderKey, std::unique_ptr<GShader>> shaders,
         std::unique_ptr<GHwBuffer> triangleBuffer,
         std::unique_ptr<GHwBuffer> quadBuffer)
         : mEngineData(std::move(engineData)), mShaders(std::move(shaders)),
@@ -39,17 +40,7 @@ public:
 public:
     static std::unique_ptr<GEngineResources> Create();
 
-    template <typename F>
-    void UseProgram(EGShaderKey shaderKey, F &&scope) const
-    {
-        const GLuint program = mShaders.at(shaderKey);
-
-        glUseProgram(program);
-        {
-            scope();
-        }
-        glUseProgram(GL_NONE);
-    }
+    GShader *Shader(EGShaderKey key) const { return mShaders.at(key).get(); }
 
     template <typename F> bool CatchErrors(F &&scope) const
     {
@@ -61,10 +52,10 @@ public:
             return true;
 
         std::cout << "GL error: " << err << std::endl;
-        
+
         return false;
     }
-    
+
     GHwBuffer *TriangleBuffer() const { return mTriangleBuffer.get(); }
 
     GHwBuffer *QuadBuffer() const { return mQuadBuffer.get(); }
@@ -72,7 +63,7 @@ public:
 public:
     const GEngineData mEngineData;
 
-    const std::unordered_map<EGShaderKey, GLuint> mShaders;
+    const std::unordered_map<EGShaderKey, std::unique_ptr<GShader>> mShaders;
 
     const std::unique_ptr<GHwBuffer> mTriangleBuffer;
     const std::unique_ptr<GHwBuffer> mQuadBuffer;

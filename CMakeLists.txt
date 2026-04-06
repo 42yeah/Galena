@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10.0)
 
 project(Galena)
 
+include(FetchContent)
+
 set(CMAKE_CXX_STANDARD 17)
 
 option(GALENA_BUILD_SAMPLES "Whether Galena should build samples" ON)
@@ -18,10 +20,26 @@ set(GALENA_SRC
     GEngineResources.cpp
     GHwBuffer.cpp
     GImage.cpp
-    GTexture.cpp)
+    GTexture.cpp
+    GShader.cpp)
 
-set(GALENA_EXTERNAL_PUBLIC_LIBS)
-set(GALENA_EXTERNAL_PRIVATE_LIBS)
+set(GALENA_EXTERNAL_DEPS)
+set(GALENA_MAKEAVAILABLE_LIST)
+
+macro (declare_external_deps DEP_NAME DEP_REPO DEP_TAG DEP_LINK)
+    FetchContent_Declare("${DEP_NAME}"
+        GIT_REPOSITORY "${DEP_REPO}"
+        GIT_TAG "${DEP_TAG}"
+        SOURCE_DIR "${GALENA_SRC_ROOT}/external/${DEP_NAME}")
+
+    list(APPEND GALENA_MAKEAVAILABLE_LIST "${DEP_NAME}")
+    list(APPEND GALENA_EXTERNAL_DEPS "${DEP_LINK}")
+endmacro ()
+
+declare_external_deps(glm
+    "https://github.com/g-truc/glm.git"
+    e8642318a099b9b6ff432bed8b8b90b4226a9edd
+    glm::glm)
 
 # Setup shaders
 
@@ -80,19 +98,15 @@ add_library(${GALENA_LIBRARY_NAME}
 
 target_include_directories(${GALENA_LIBRARY_NAME} PUBLIC ${GALENA_INCLUDE_DIR})
 
-foreach (ENTRY ${GALENA_EXTERNAL_PUBLIC_LIBS})
-    find_package(${ENTRY} REQUIRED)
-    target_link_libraries(${GALENA_LIBRARY_NAME} PUBLIC ${ENTRY})
-endforeach ()
-
-foreach (ENTRY ${GALENA_EXTERNAL_PRIVATE_LIBS})
-    find_package(${ENTRY} REQUIRED)
-    target_link_libraries(${GALENA_LIBRARY_NAME} PRIVATE ${ENTRY})
-endforeach ()
-
 if (EMSCRIPTEN)
     target_link_options(${GALENA_LIBRARY_NAME} PUBLIC -sUSE_WEBGL2=1 -sFULL_ES3=1)
 endif ()
+
+FetchContent_MakeAvailable(${GALENA_MAKEAVAILABLE_LIST})
+
+foreach (ENTRY ${GALENA_EXTERNAL_DEPS})
+    target_link_libraries(${GALENA_LIBRARY_NAME} PRIVATE ${ENTRY})
+endforeach ()
 
 # Setup samples
 

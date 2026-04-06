@@ -2,6 +2,12 @@
 
 #include "GEngineData.h"
 #include "GEngineResources.h"
+#include "GShader.h"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/trigonometric.hpp"
+
+#include <glm/glm.hpp>
 
 #include <GLES3/gl3.h>
 
@@ -41,7 +47,14 @@ std::unique_ptr<GEngine> GEngine::Create()
 
 void GEngine::RenderDebugTriangle()
 {
-    mEngineResources->UseProgram(GShaderKeyDebug, [&] {
+    GShader *pShader = mEngineResources->Shader(GShaderKeyDebug);
+
+    pShader->Bind([&] {
+        glm::mat4 transform(1.0f);
+
+        glUniformMatrix4fv(pShader->Location("transform"), 1, GL_FALSE,
+            glm::value_ptr(transform));
+
         mEngineResources->TriangleBuffer()->Bind(
             [&] { glDrawArrays(GL_TRIANGLES, 0, 3); });
     });

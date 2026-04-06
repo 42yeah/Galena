@@ -3,3 +3,5 @@ src/shaders/*.h
 build
 compile_commands.json
 .clangd
+src/external/*
+!src/external/stb_image.h

@@ -1,6 +1,7 @@
 #include "GEngineResources.h"
 #include "GEngineData.h"
 #include "GHwBuffer.h"
+#include "GShader.h"
 
 #include <iostream>
 #include <memory>
@@ -11,96 +12,24 @@
 
 namespace galena {
 
-GEngineResources::~GEngineResources()
-{
-    for (std::pair<EGShaderKey, GLuint> it : mShaders)
-    {
-        glDeleteProgram(it.second);
-    }
-}
-
-std::optional<GLuint> CompileShader(GLuint shaderType, const char *czSource)
-{
-    GLuint shader = glCreateShader(shaderType);
-
-    glShaderSource(shader, 1, &czSource, nullptr);
-    glCompileShader(shader);
-
-    GLint params = 0;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &params);
-
-    if (params != GL_TRUE)
-    {
-        char infoLog[512] = {0};
-
-        glGetShaderInfoLog(shader, sizeof(infoLog), nullptr, infoLog);
-        std::cerr << "Failed to compile shader: " << infoLog << std::endl;
-
-        glDeleteShader(shader);
-
-        return std::nullopt;
-    }
-
-    return shader;
-}
-
-std::optional<GLuint> LinkProgram(GLuint vertexShader, GLuint fragmentShader)
-{
-    GLuint program = glCreateProgram();
-
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-
-    glLinkProgram(program);
-
-    GLint params = 0;
-    glGetProgramiv(program, GL_LINK_STATUS, &params);
-
-    if (params != GL_TRUE)
-    {
-        char infoLog[512] = {0};
-
-        glGetProgramInfoLog(program, sizeof(infoLog), nullptr, infoLog);
-        std::cerr << "Failed to link program: " << infoLog << std::endl;
-
-        glDeleteProgram(program);
-
-        return std::nullopt;
-    }
-
-    return program;
-}
+GEngineResources::~GEngineResources() {}
 
 std::unique_ptr<GEngineResources> GEngineResources::Create()
 {
     GEngineData data = GetEngineData();
 
-    std::unordered_map<EGShaderKey, GLuint> shaders;
+    std::unordered_map<EGShaderKey, std::unique_ptr<GShader>> shaders;
 
     for (std::pair<EGShaderKey, const GShaderData &> it : data.shaderData)
     {
-        std::optional<GLuint> vertexShader = CompileShader(
-            GL_VERTEX_SHADER, it.second.vertexShaderSource.c_str());
+        std::unique_ptr<GShader> shader =
+            GShader::Create(it.second.vertexShaderSource,
+                it.second.fragmentShaderSource, it.second.uniforms);
 
-        if (!vertexShader)
+        if (!shader)
             return nullptr;
 
-        std::optional<GLuint> fragmentShader = CompileShader(
-            GL_FRAGMENT_SHADER, it.second.fragmentShaderSource.c_str());
-
-        if (!fragmentShader)
-            return nullptr;
-
-        std::optional<GLuint> program =
-            LinkProgram(*vertexShader, *fragmentShader);
-
-        glDeleteShader(*vertexShader);
-        glDeleteShader(*fragmentShader);
-
-        if (!program)
-            return nullptr;
-
-        shaders[it.first] = *program;
+        shaders[it.first] = std::move(shader);
     }
 
     const float triangleData[] = {

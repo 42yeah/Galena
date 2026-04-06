@@ -8,8 +8,12 @@ GEngineData GetEngineData()
 {
     GEngineData data;
 
-    GShaderData shaderData = GShaderData(GetCommon_vs(), GetDebug_fs());
-    data.shaderData[GShaderKeyDebug] = shaderData;
+    std::vector<std::string> debugShaderUniforms = {"transform"};
+
+    GShaderData debugShaderData = GShaderData(
+        GetCommon_vs(), GetDebug_fs(), std::move(debugShaderUniforms));
+
+    data.shaderData[GShaderKeyDebug] = std::move(debugShaderData);
 
     return data;
 }

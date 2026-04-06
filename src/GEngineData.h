@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace galena {
 
@@ -15,12 +16,16 @@ struct GShaderData
     std::string vertexShaderSource;
     std::string fragmentShaderSource;
 
+    std::vector<std::string> uniforms;
+
 public:
     GShaderData() = default;
 
-    GShaderData(std::string vertexSource, std::string fragmentSource)
+    GShaderData(std::string vertexSource, std::string fragmentSource,
+        std::vector<std::string> uniforms)
         : vertexShaderSource(std::move(vertexSource)),
-          fragmentShaderSource(std::move(fragmentSource))
+          fragmentShaderSource(std::move(fragmentSource)),
+          uniforms(std::move(uniforms))
     {
     }
 };
