@@ -16,7 +16,9 @@ set(GALENA_SRC
     GEngine.cpp
     GEngineData.cpp
     GEngineResources.cpp
-    GHwBuffer.cpp)
+    GHwBuffer.cpp
+    GImage.cpp
+    GTexture.cpp)
 
 set(GALENA_EXTERNAL_PUBLIC_LIBS)
 set(GALENA_EXTERNAL_PRIVATE_LIBS)
@@ -56,12 +58,12 @@ endmacro ()
 process_shaders("vs")
 process_shaders("fs")
 
-configure_file("${GALENA_SRC_ROOT}/shaders/GShaders.h.in"
-    "${GALENA_SRC_ROOT}/shaders/GShaders.h")
+configure_file("${GALENA_SRC_ROOT}/shaders/GShaderData.h.in"
+    "${GALENA_SRC_ROOT}/shaders/GShaderData.h")
 
-set(GALENA_SHADER_SRC_IMPL_FILE "${GALENA_SRC_ROOT}/shaders/GShaders.cpp")
+set(GALENA_SHADER_SRC_IMPL_FILE "${GALENA_SRC_ROOT}/shaders/GShaderData.cpp")
 
-configure_file("${GALENA_SRC_ROOT}/shaders/GShaders.cpp.in"
+configure_file("${GALENA_SRC_ROOT}/shaders/GShaderData.cpp.in"
     "${GALENA_SHADER_SRC_IMPL_FILE}")
 
 # Setup library

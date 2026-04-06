@@ -1,6 +1,6 @@
 #include "GEngineData.h"
 
-#include "shaders/GShaders.h"
+#include "shaders/GShaderData.h"
 
 namespace galena {
 

@@ -1,5 +1,0 @@
-#include "GShaders.h"
-
-namespace galena {
-
-${GALENA_SHADER_SRC_IMPL}}  // namespace galena
