@@ -3,9 +3,7 @@
 #include "GHwBuffer.h"
 #include "GShader.h"
 
-#include <iostream>
 #include <memory>
-#include <optional>
 #include <unordered_map>
 
 #include <GLES3/gl3.h>
