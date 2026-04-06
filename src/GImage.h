@@ -11,7 +11,11 @@ namespace galena {
 
 struct GImage
 {
-    const void *pData = nullptr;
+    using Deleter = void (*)(void *);
+
+    std::unique_ptr<void, Deleter> data =
+        std::unique_ptr<void, Deleter>(nullptr, [](void *) {});
+
     std::function<void()> dtor = nullptr;
 
     uint32_t width = 0;
@@ -20,9 +24,13 @@ struct GImage
 public:
     GImage() = default;
 
-    GImage(const void *pData, std::function<void()> dtor, uint32_t width,
-        uint32_t height)
-        : pData(pData), dtor(std::move(dtor)), width(width), height(height)
+    GImage(void *pData, uint32_t width, uint32_t height)
+        : data(pData, [](void *) {}), width(width), height(height)
+    {
+    }
+
+    GImage(void *pData, Deleter dtor, uint32_t width, uint32_t height)
+        : data(pData, dtor), width(width), height(height)
     {
     }
 

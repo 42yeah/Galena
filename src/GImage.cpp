@@ -21,8 +21,8 @@ std::unique_ptr<GImage> LoadStbImage(const void *pData, size_t size)
         return nullptr;
 
     std::unique_ptr<GImage> image = std::make_unique<GImage>(
-        pDecodedData, [pDecodedData]() { stbi_image_free(pDecodedData); },
-        width, height);
+        pDecodedData, [](void *pData) { stbi_image_free(pData); }, width,
+        height);
 
     return image;
 }
