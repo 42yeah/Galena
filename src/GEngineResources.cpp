@@ -55,6 +55,8 @@ std::unique_ptr<GEngineResources> GEngineResources::Create(
         {
             std::cerr << "Cannot create texture: " << texturePath.second
                       << std::endl;
+
+            continue;
         }
 
         textures[texturePath.first] = std::move(texture);

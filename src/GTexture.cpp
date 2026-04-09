@@ -62,8 +62,8 @@ std::unique_ptr<GTexture> GTexture::Create(const GImage &image,
     glTexParameteri(
         GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, ToGlTextureWrapMode(wrapT));
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width, image.height, 0,
-        GL_RGBA8, GL_UNSIGNED_BYTE, image.data.get());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0,
+        GL_RGBA, GL_UNSIGNED_BYTE, image.data.get());
 
     return std::make_unique<GTexture>(texture);
 }

@@ -122,9 +122,13 @@ foreach (ENTRY ${GALENA_SAMPLES})
         set(ENTRY_ARTIFACT_BASE "${CMAKE_CURRENT_BINARY_DIR}/${SAMPLE_NAME}")
         set(ENTRY_WASM_FILE "${ENTRY_ARTIFACT_BASE}.wasm")
         set(ENTRY_JS_FILE "${ENTRY_ARTIFACT_BASE}.js")
+        set(ENTRY_DATA_FILE "${ENTRY_ARTIFACT_BASE}.data")
         add_custom_command(TARGET ${SAMPLE_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ENTRY_WASM_FILE}" "${GALENA_SAMPLE_WASM_DEPLOY_DIR}"
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ENTRY_JS_FILE}" "${GALENA_SAMPLE_WASM_DEPLOY_DIR}"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ENTRY_DATA_FILE}" "${GALENA_SAMPLE_WASM_DEPLOY_DIR}"
         )
+        target_link_options(${SAMPLE_NAME} PRIVATE
+            --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/html/assets/monde.png@/assets/monde.png)
     endif ()
 endforeach ()

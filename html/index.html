@@ -5,6 +5,16 @@
   <body>
     Hello, Galena!
     <canvas id="canvas" width="300px" height="300px"></canvas>
-    <script src="js/SurfaceDraw.js"></script>
+    <script>
+        var Module = {
+            locateFile: (path, prefix) => {
+                if (path.endsWith('.data'))
+                    return '/js/' + path
+
+                return prefix + path
+            }
+        }
+    </script>
+    <script src="js/LoadTexture.js"></script>
   </body>
 </html>
