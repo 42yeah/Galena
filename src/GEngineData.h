@@ -9,6 +9,7 @@ namespace galena {
 enum EGShaderKey
 {
     GShaderKeyDebug = 0,
+    GShaderKeyTexturedQuad
 };
 
 struct GShaderData

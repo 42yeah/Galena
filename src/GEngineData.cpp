@@ -10,10 +10,14 @@ GEngineData GetEngineData()
 
     std::vector<std::string> debugShaderUniforms = {"transform"};
 
-    GShaderData debugShaderData = GShaderData(
+    data.shaderData[GShaderKeyDebug] = GShaderData(
         GetCommon_vs(), GetDebug_fs(), std::move(debugShaderUniforms));
 
-    data.shaderData[GShaderKeyDebug] = std::move(debugShaderData);
+    std::vector<std::string> texturedQuadUniforms = {
+        "transform", "sampleTexture"};
+
+    data.shaderData[GShaderKeyTexturedQuad] = GShaderData(
+        GetCommon_vs(), GetTexturedQuad_fs(), std::move(texturedQuadUniforms));
 
     return data;
 }

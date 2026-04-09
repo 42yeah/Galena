@@ -24,7 +24,12 @@ enum EGSampleResource
 
 std::unique_ptr<GEngine> gEngine = nullptr;
 
-void Loop() { gEngine->Clear(1.0f, 0.5f, 0.0f, 1.0f); }
+void Loop()
+{
+    gEngine->Clear(1.0f, 0.0f, 1.0f, 1.0f);
+
+    gEngine->RenderSprite(GSampleResourceMonde, 0, 0, 0, 0, 0, 0, 0, 0);
+}
 
 int32_t main()
 {

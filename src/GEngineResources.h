@@ -49,6 +49,11 @@ public:
 
     GShader *Shader(EGShaderKey key) const { return mShaders.at(key).get(); }
 
+    GTexture *Texture(uint32_t textureId) const
+    {
+        return mTextures.at(textureId).get();
+    }
+
     template <typename F> bool CatchErrors(F &&scope) const
     {
         scope();

@@ -25,7 +25,7 @@ public:
 
     void RenderDebugTriangle();
 
-    void RenderSprite(uint32_t spriteId, uint32_t x, uint32_t y, uint32_t w,
+    void RenderSprite(uint32_t textureId, uint32_t x, uint32_t y, uint32_t w,
         uint32_t h, uint32_t sx, uint32_t sy, uint32_t sw, uint32_t sh);
 
 private:
