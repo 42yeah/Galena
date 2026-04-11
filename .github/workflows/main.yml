@@ -29,7 +29,8 @@ jobs:
           ninja --version
 
       - name: Build with CMake
-        run: >
-          mkdir build && cd build
+        run: |
+          mkdir build 
+          cd build
           emcmake cmake .. -G Ninja -DCMAKE_BUILD_TYPE=MinSizeRel
           ninja
