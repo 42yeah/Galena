@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GEngineDesc.h"
+#include "Galena/GPostprocess.h"
 #include "Galena/GRenderDesc.h"
 
 #include <memory>
@@ -10,6 +11,7 @@
 namespace galena {
 
 class GEngineResources;
+class GFramebuffer;
 
 class GEngine
 {
@@ -30,13 +32,23 @@ public:
 
     bool RenderSprite(const GRenderSpriteDesc &spriteDesc) const;
 
+    bool RenderPostprocess(GFramebuffer *pDstFramebuffer,
+        GFramebuffer *pSrcFramebuffer, EGPostprocessType postprocType) const;
+
     bool Render(const GRenderDesc &desc) const;
+
+    GFramebuffer *CreateFramebuffer(uint32_t width, uint32_t height);
+
+    void ReleaseFramebuffer(GFramebuffer *pFramebuffer);
 
 private:
     const std::unique_ptr<GEngineResources> mEngineResources;
 
     uint32_t mWidth = 0;
     uint32_t mHeight = 0;
+
+    // Managed vector of framebuffers
+    std::vector<std::unique_ptr<GFramebuffer>> mFramebuffers;
 };
 
 }  // namespace galena

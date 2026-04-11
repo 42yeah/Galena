@@ -38,15 +38,14 @@ GLuint ToGlTextureWrapMode(EGTextureWrapMode wrapMode)
     }
 }
 
-std::unique_ptr<GTexture> GTexture::Create(const GImage &image,
-    EGTextureFilter minFilter, EGTextureFilter magFilter,
-    EGTextureWrapMode wrapS, EGTextureWrapMode wrapT)
+inline GLuint GenAndBindTexture(EGTextureFilter minFilter,
+    EGTextureFilter magFilter, EGTextureWrapMode wrapS, EGTextureWrapMode wrapT)
 {
     GLuint texture = GL_NONE;
 
     glGenTextures(1, &texture);
     if (texture == GL_NONE)
-        return nullptr;
+        return GL_NONE;
 
     glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -62,10 +61,35 @@ std::unique_ptr<GTexture> GTexture::Create(const GImage &image,
     glTexParameteri(
         GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, ToGlTextureWrapMode(wrapT));
 
+    return texture;
+}
+
+std::unique_ptr<GTexture> GTexture::Create(const GImage &image,
+    EGTextureFilter minFilter, EGTextureFilter magFilter,
+    EGTextureWrapMode wrapS, EGTextureWrapMode wrapT)
+{
+    GLuint texture = GenAndBindTexture(minFilter, magFilter, wrapS, wrapT);
+    if (texture == GL_NONE)
+        return nullptr;
+
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0,
         GL_RGBA, GL_UNSIGNED_BYTE, image.data.get());
 
     return std::make_unique<GTexture>(texture, image.width, image.height);
+}
+
+std::unique_ptr<GTexture> GTexture::Create(uint32_t width, uint32_t height,
+    EGTextureFilter minFilter, EGTextureFilter magFilter,
+    EGTextureWrapMode wrapS, EGTextureWrapMode wrapT)
+{
+    GLuint texture = GenAndBindTexture(minFilter, magFilter, wrapS, wrapT);
+    if (texture == GL_NONE)
+        return nullptr;
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
+        GL_UNSIGNED_BYTE, nullptr);
+
+    return std::make_unique<GTexture>(texture, width, height);
 }
 
 }  // namespace galena

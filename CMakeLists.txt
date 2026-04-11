@@ -14,14 +14,15 @@ set(GALENA_LIBRARY_NAME "${PROJECT_NAME}")
 set(GALENA_SAMPLE_WASM_DEPLOY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/html/js")
 
 set(GALENA_SRC
-    GVersion.cpp
     GEngine.cpp
     GEngineData.cpp
     GEngineResources.cpp
+    GFramebuffer.cpp
     GHwBuffer.cpp
     GImage.cpp
     GTexture.cpp
-    GShader.cpp)
+    GShader.cpp
+    GVersion.cpp)
 
 set(GALENA_EXTERNAL_DEPS)
 set(GALENA_MAKEAVAILABLE_LIST)

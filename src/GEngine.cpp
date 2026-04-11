@@ -2,8 +2,11 @@
 
 #include "GEngineData.h"
 #include "GEngineResources.h"
+#include "GFramebuffer.h"
+#include "GHwBuffer.h"
 #include "GShader.h"
 #include "GTexture.h"
+#include "Galena/GPostprocess.h"
 #include "Galena/GRenderDesc.h"
 
 #include <glm/ext/matrix_transform.hpp>
@@ -12,6 +15,7 @@
 
 #include <GLES3/gl3.h>
 
+#include <algorithm>
 #include <iostream>
 #include <memory>
 
@@ -139,16 +143,99 @@ bool GEngine::RenderSprite(const GRenderSpriteDesc &spriteDesc) const
     return true;
 }
 
+bool GEngine::RenderPostprocess(GFramebuffer *pDstFramebuffer,
+    GFramebuffer *pSrcFramebuffer, EGPostprocessType postprocType) const
+{
+    // Under the hood, a postprocess is a full-screen blit with specific shaders
+
+    if (!pSrcFramebuffer)
+        return false;
+
+    GTexture *pTexture = pSrcFramebuffer->FramebufferTexture();
+    if (!pTexture)
+        return false;
+
+    GShader *pShader = nullptr;
+
+    switch (postprocType)
+    {
+    case GPostprocessTypeInvert:
+        pShader = mEngineResources->Shader(GShaderKeyInvert);
+        break;
+
+    default:
+        break;
+    }
+
+    if (!pShader)
+        return false;
+
+    pShader->Bind([&] {
+        pTexture->BindAndActive(0, [&] {
+            glUniform1i(pShader->Location("sampleTexture"), 0);
+
+            mEngineResources->QuadBuffer()->Bind([&] {
+                if (pDstFramebuffer)
+                {
+                    pDstFramebuffer->Bind(
+                        [] { glDrawArrays(GL_TRIANGLES, 0, 6); });
+                }
+                else
+                {
+                    glDrawArrays(GL_TRIANGLES, 0, 6);
+                }
+            });
+        });
+    });
+
+    return true;
+}
+
 bool GEngine::Render(const GRenderDesc &desc) const
 {
     bool isOk = true;
 
     for (const GRenderSpriteDesc &spriteDesc : desc.spriteDescs)
     {
-        isOk = isOk && RenderSprite(spriteDesc);
+        if (desc.pDstFramebuffer)
+        {
+            desc.pDstFramebuffer->Bind(
+                [&] { isOk = isOk && RenderSprite(spriteDesc); });
+        }
+        else
+        {
+            isOk = isOk && RenderSprite(spriteDesc);
+        }
     }
 
     return isOk;
+}
+
+GFramebuffer *GEngine::CreateFramebuffer(uint32_t width, uint32_t height)
+{
+    std::unique_ptr<GFramebuffer> framebuffer =
+        GFramebuffer::CreateFramebuffer(width, height);
+
+    if (!framebuffer)
+        return nullptr;
+
+    mFramebuffers.emplace_back(std::move(framebuffer));
+
+    return mFramebuffers.back().get();
+}
+
+void GEngine::ReleaseFramebuffer(GFramebuffer *pFramebuffer)
+{
+    auto cit = std::find_if(mFramebuffers.cbegin(), mFramebuffers.cend(),
+        [pFramebuffer](const std::unique_ptr<GFramebuffer> &framebuffer) {
+            return framebuffer.get() == pFramebuffer;
+        });
+
+    // Double free maybe? In any case we did not produce this
+    if (cit == mFramebuffers.cend())
+        return;
+
+    mFramebuffers.erase(cit);
 }
 
 }  // namespace galena
