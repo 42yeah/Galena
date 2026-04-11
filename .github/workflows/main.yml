@@ -1,0 +1,35 @@
+name: Emscripten Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build with Emscripten
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Ninja
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
+
+      - name: Setup Emscripten toolchain
+        uses: emscripten-core/setup-emsdk@v16
+
+      - name: Sanity Check
+        run: |
+          emcc -v
+          ninja --version
+
+      - name: Build with CMake
+        run: >
+          mkdir build && cd build
+          emcmake cmake .. -G Ninja -DCMAKE_BUILD_TYPE=MinSizeRel
+          ninja
