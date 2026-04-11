@@ -29,6 +29,11 @@ GEngineData GetEngineData()
     data.shaderData[GShaderKeyBloom] = GShaderData(
         GetCommonFramebuffer_vs(), GetBloom_fs(), std::move(bloomUniforms));
 
+    std::vector<std::string> addUniforms = {"textureA", "textureB"};
+
+    data.shaderData[GShaderKeyAdd] = GShaderData(
+        GetCommonFramebuffer_vs(), GetAdd_fs(), std::move(addUniforms));
+
     return data;
 }
 

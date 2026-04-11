@@ -42,8 +42,8 @@ public:
 public:
     template <typename F> void BindAndActive(size_t index, F &&scope)
     {
-        glBindTexture(GL_TEXTURE_2D, mTexture);
         glActiveTexture(GL_TEXTURE0 + index);
+        glBindTexture(GL_TEXTURE_2D, mTexture);
 
         {
             scope();

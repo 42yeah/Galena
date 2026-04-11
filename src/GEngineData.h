@@ -11,7 +11,8 @@ enum EGShaderKey
     GShaderKeyDebug = 0,
     GShaderKeyTexturedQuad,
     GShaderKeyInvert,
-    GShaderKeyBloom
+    GShaderKeyBloom,
+    GShaderKeyAdd
 };
 
 struct GShaderData

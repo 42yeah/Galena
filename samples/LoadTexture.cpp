@@ -118,7 +118,7 @@ public:
 public:
     void Loop()
     {
-        mEngine->Clear(1.0f, 0.0f, 1.0f, 1.0f);
+        mEngine->Clear(1.0f, 1.0f, 1.0f, 1.0f);
 
         mEngine->Render(mRenderDesc);
 
