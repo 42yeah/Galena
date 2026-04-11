@@ -12,6 +12,7 @@ BraceWrapping:
     AfterEnum: true
     AfterStruct: true
     AfterNamespace: false
+    BeforeElse: true
 AlignAfterOpenBracket: DontAlign
 ContinuationIndentWidth: 4
 SpacesBeforeTrailingComments: 2

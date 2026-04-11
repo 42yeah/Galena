@@ -4,6 +4,7 @@
 #include "GEngineResources.h"
 #include "GShader.h"
 #include "GTexture.h"
+#include "Galena/GRenderDesc.h"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
@@ -23,18 +24,6 @@ GEngine::GEngine(std::unique_ptr<GEngineResources> &&resources)
 
 GEngine::~GEngine() {}
 
-void GEngine::Clear(float r, float g, float b, float a)
-{
-    glClearColor(r, g, b, a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-void GEngine::SetRenderSurfaceSize(uint32_t width, uint32_t height)
-{
-    mWidth = width;
-    mHeight = height;
-}
-
 std::unique_ptr<GEngine> GEngine::Create(const GEngineDesc &desc)
 {
     std::unique_ptr<GEngineResources> resources =
@@ -52,7 +41,19 @@ std::unique_ptr<GEngine> GEngine::Create(const GEngineDesc &desc)
     return std::move(engine);
 }
 
-void GEngine::RenderDebugTriangle()
+void GEngine::SetRenderSurfaceSize(uint32_t width, uint32_t height)
+{
+    mWidth = width;
+    mHeight = height;
+}
+
+void GEngine::Clear(float r, float g, float b, float a) const
+{
+    glClearColor(r, g, b, a);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void GEngine::RenderDebugTriangle() const
 {
     GShader *pShader = mEngineResources->Shader(GShaderKeyDebug);
 
@@ -67,11 +68,10 @@ void GEngine::RenderDebugTriangle()
     });
 }
 
-bool GEngine::RenderSprite(uint32_t textureId, int32_t x, int32_t y, uint32_t w,
-    uint32_t h, uint32_t sx, uint32_t sy, uint32_t sw, uint32_t sh)
+bool GEngine::RenderSprite(const GRenderSpriteDesc &spriteDesc) const
 {
     GShader *pShader = mEngineResources->Shader(GShaderKeyTexturedQuad);
-    GTexture *pTexture = mEngineResources->Texture(textureId);
+    GTexture *pTexture = mEngineResources->Texture(spriteDesc.textureId);
 
     if (!pShader || !pTexture)
         return false;
@@ -82,11 +82,14 @@ bool GEngine::RenderSprite(uint32_t textureId, int32_t x, int32_t y, uint32_t w,
     if (surfaceSize.x == 0.0f || surfaceSize.y == 0.0)
         return false;
 
-    const glm::vec2 position =
-        glm::vec2(static_cast<float>(x), static_cast<float>(y)) / surfaceSize;
+    const glm::vec2 position = glm::vec2(static_cast<float>(spriteDesc.x),
+                                   static_cast<float>(spriteDesc.y)) /
+                               surfaceSize;
 
-    const glm::vec2 size =
-        glm::vec2(static_cast<float>(w), static_cast<float>(h)) / surfaceSize;
+    const glm::vec2 size = 0.5f *
+                           glm::vec2(static_cast<float>(spriteDesc.w),
+                               static_cast<float>(spriteDesc.h)) /
+                           surfaceSize;
 
     const glm::vec2 textureSize =
         glm::vec2(static_cast<float>(pTexture->Width()),
@@ -95,11 +98,13 @@ bool GEngine::RenderSprite(uint32_t textureId, int32_t x, int32_t y, uint32_t w,
     if (textureSize.x == 0.0f || textureSize.y == 0.0f)
         return false;
 
-    const glm::vec2 subposition =
-        glm::vec2(static_cast<float>(sx), static_cast<float>(sy)) / textureSize;
+    const glm::vec2 subposition = glm::vec2(static_cast<float>(spriteDesc.sx),
+                                      static_cast<float>(spriteDesc.sy)) /
+                                  textureSize;
 
-    const glm::vec2 subsize =
-        glm::vec2(static_cast<float>(sw), static_cast<float>(sh)) / textureSize;
+    const glm::vec2 subsize = glm::vec2(static_cast<float>(spriteDesc.sw),
+                                  static_cast<float>(spriteDesc.sh)) /
+                              textureSize;
 
     if (subsize.x == 0.0f || subsize.y == 0.0f)
         return false;
@@ -112,8 +117,8 @@ bool GEngine::RenderSprite(uint32_t textureId, int32_t x, int32_t y, uint32_t w,
 
         glm::mat4 sampleTransform(1.0f);
 
-        sampleTransform = glm::translate(
-            sampleTransform, glm::vec3(subposition, 0.0f));
+        sampleTransform =
+            glm::translate(sampleTransform, glm::vec3(subposition, 0.0f));
 
         sampleTransform = glm::scale(sampleTransform, glm::vec3(subsize, 1.0f));
 
@@ -123,7 +128,7 @@ bool GEngine::RenderSprite(uint32_t textureId, int32_t x, int32_t y, uint32_t w,
         glUniformMatrix4fv(pShader->Location("sampleTransform"), 1, GL_FALSE,
             glm::value_ptr(sampleTransform));
 
-        mEngineResources->Texture(textureId)->BindAndActive(0, [&] {
+        pTexture->BindAndActive(0, [&] {
             glUniform1i(pShader->Location("sampleTexture"), 0);
 
             mEngineResources->QuadBuffer()->Bind(
@@ -132,6 +137,18 @@ bool GEngine::RenderSprite(uint32_t textureId, int32_t x, int32_t y, uint32_t w,
     });
 
     return true;
+}
+
+bool GEngine::Render(const GRenderDesc &desc) const
+{
+    bool isOk = true;
+
+    for (const GRenderSpriteDesc &spriteDesc : desc.spriteDescs)
+    {
+        isOk = isOk && RenderSprite(spriteDesc);
+    }
+
+    return isOk;
 }
 
 }  // namespace galena

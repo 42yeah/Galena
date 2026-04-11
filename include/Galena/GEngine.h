@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GEngineDesc.h"
+#include "Galena/GRenderDesc.h"
 
 #include <memory>
 
@@ -21,14 +22,15 @@ public:
     static std::unique_ptr<GEngine> Create(const GEngineDesc &desc);
 
 public:
-    void Clear(float r, float g, float b, float a);
-
     void SetRenderSurfaceSize(uint32_t width, uint32_t height);
 
-    void RenderDebugTriangle();
+    void Clear(float r, float g, float b, float a) const;
 
-    bool RenderSprite(uint32_t textureId, int32_t x, int32_t y, uint32_t w,
-        uint32_t h, uint32_t sx, uint32_t sy, uint32_t sw, uint32_t sh);
+    void RenderDebugTriangle() const;
+
+    bool RenderSprite(const GRenderSpriteDesc &spriteDesc) const;
+
+    bool Render(const GRenderDesc &desc) const;
 
 private:
     const std::unique_ptr<GEngineResources> mEngineResources;
