@@ -11,7 +11,7 @@ enum EGShaderKey
     GShaderKeyDebug = 0,
     GShaderKeyTexturedQuad,
     GShaderKeyInvert,
-    GShaderKeyBloom,
+    GShaderKeyGaussianBlur,
     GShaderKeyAdd
 };
 

@@ -26,8 +26,9 @@ GEngineData GetEngineData()
 
     std::vector<std::string> bloomUniforms = {"sampleTexture", "horizontal"};
 
-    data.shaderData[GShaderKeyBloom] = GShaderData(
-        GetCommonFramebuffer_vs(), GetBloom_fs(), std::move(bloomUniforms));
+    data.shaderData[GShaderKeyGaussianBlur] =
+        GShaderData(GetCommonFramebuffer_vs(), GetGaussianBlur_fs(),
+            std::move(bloomUniforms));
 
     std::vector<std::string> addUniforms = {"textureA", "textureB"};
 
