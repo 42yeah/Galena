@@ -99,8 +99,8 @@ bool GPostprocessRenderer::RenderPostprocessBloom(GFramebuffer *pDstFramebuffer,
     if (!pGaussianBlurShader)
         return false;
 
-    GShader *pAddShader = mpEngineResources->Shader(GShaderKeyAdd);
-    if (!pAddShader)
+    GShader *pBlendShader = mpEngineResources->Shader(GShaderKeyBlend);
+    if (!pBlendShader)
         return false;
 
     GTexture *pCurrTexture = pSrcTexture;
@@ -142,11 +142,11 @@ bool GPostprocessRenderer::RenderPostprocessBloom(GFramebuffer *pDstFramebuffer,
             }
         });
 
-        pAddShader->Bind([&] {
+        pBlendShader->Bind([&] {
             pSrcTexture->BindAndActive(0, [&] {
                 pCurrFramebuffer->FramebufferTexture()->BindAndActive(1, [&] {
-                    glUniform1i(pAddShader->Location("textureA"), 0);
-                    glUniform1i(pAddShader->Location("textureB"), 1);
+                    glUniform1i(pBlendShader->Location("textureA"), 0);
+                    glUniform1i(pBlendShader->Location("textureB"), 1);
 
                     BindFramebufferOrPresent(pDstFramebuffer,
                         [&] { glDrawArrays(GL_TRIANGLES, 0, 6); });
