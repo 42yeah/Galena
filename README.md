@@ -9,3 +9,7 @@ ninja
 ```
 
 And `serve` the `html` directory. Change the HTML (it's very simple, just take a look) and see what happens.
+
+### Screenshot
+
+![Current screenshot](SCREENSHOT.png)
