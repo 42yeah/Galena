@@ -13,4 +13,7 @@ void main()
 {
     vec2 samplePos = vec2(sampleTransform * vec4(uv, 1.0, 1.0));
     color = texture(sampleTexture, samplePos);
+
+    if (color.a == 0.0)
+        discard;
 }

@@ -111,26 +111,23 @@ public:
         }
 
         mpGameFramebuffer = mEngine->CreateFramebuffer(300, 300);
-        mpGGameFramebuffer = mEngine->CreateFramebuffer(300, 300);
-        mRenderDesc.pDstFramebuffer = mpGameFramebuffer;
+        mRenderDesc.pDstFramebuffer = nullptr;
+        mRenderDesc.clearColor = GColor(1.0f, 0.5f, 0.0f, 1.0f);
     }
 
 public:
     void Loop()
     {
-        mEngine->Clear(1.0f, 1.0f, 1.0f, 1.0f);
-
         mEngine->Render(mRenderDesc);
 
-        mEngine->RenderPostprocess(nullptr, mpGameFramebuffer,
-            galena::GPostprocessTypeBloom);
+        // mEngine->RenderPostprocess(
+        //     nullptr, mpGameFramebuffer, galena::GPostprocessTypeBloom);
     }
 
 private:
     std::unique_ptr<GEngine> mEngine = nullptr;
 
     GFramebuffer *mpGameFramebuffer = nullptr;
-    GFramebuffer *mpGGameFramebuffer = nullptr;
 
     GRenderDesc mRenderDesc;
 };

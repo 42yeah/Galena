@@ -5,6 +5,7 @@
 #include "GFramebuffer.h"
 #include "GHwBuffer.h"
 #include "GPostprocessRenderer.h"
+#include "GRenderUtils.h"
 #include "GShader.h"
 #include "GTexture.h"
 
@@ -158,18 +159,20 @@ bool GEngine::Render(const GRenderDesc &desc) const
 {
     bool isOk = true;
 
-    for (const GRenderSpriteDesc &spriteDesc : desc.spriteDescs)
+    if (desc.clearColor.has_value())
     {
-        if (desc.pDstFramebuffer)
-        {
-            desc.pDstFramebuffer->Bind(
-                [&] { isOk = isOk && RenderSprite(spriteDesc); });
-        }
-        else
+        const GColor &color = *desc.clearColor;
+
+        glClearColor(color.r, color.g, color.b, color.a);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    BindFramebufferOrPresent(desc.pDstFramebuffer, [&] {
+        for (const GRenderSpriteDesc &spriteDesc : desc.spriteDescs)
         {
             isOk = isOk && RenderSprite(spriteDesc);
         }
-    }
+    });
 
     return isOk;
 }

@@ -1,22 +1,11 @@
 #include "GPostprocessRenderer.h"
 #include "GEngineData.h"
 #include "GFramebuffer.h"
+#include "GRenderUtils.h"
 #include "GShader.h"
 #include "GTexture.h"
 
 namespace galena {
-
-template <typename F>
-void BindFramebufferOrPresent(GFramebuffer *pFramebuffer, F &&scope)
-{
-    if (!pFramebuffer)
-    {
-        scope();
-        return;
-    }
-
-    pFramebuffer->Bind(std::forward<F>(scope));
-}
 
 constexpr uint32_t NumGaussianBlurIterations = 5;
 

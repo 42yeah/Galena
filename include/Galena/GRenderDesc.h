@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <vector>
 
 #include <cstdint>
@@ -32,9 +33,23 @@ public:
     }
 };
 
+struct GColor
+{
+    float r = 0.0f;
+    float g = 0.0f;
+    float b = 0.0f;
+    float a = 0.0f;
+
+public:
+    GColor() = default;
+
+    GColor(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) {}
+};
+
 struct GRenderDesc
 {
     GFramebuffer *pDstFramebuffer = nullptr;
+    std::optional<GColor> clearColor = std::nullopt;
 
     std::vector<GRenderSpriteDesc> spriteDescs;
 };
