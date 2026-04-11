@@ -13,8 +13,8 @@ uniform sampler2D textureB;
 
 void main()
 {
-    vec3 colorA = texture(textureA, uv).rgb;
-    vec3 colorB = texture(textureB, uv).rgb;
+    vec4 colorA = texture(textureA, uv);
+    vec4 colorB = texture(textureB, uv);
 
-    color = vec4(min(vec3(1.0), colorA + colorB), 1.0);
+    color = vec4(mix(colorA, colorB, 1.0 - colorA.w).xyz, 1.0);
 }

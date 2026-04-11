@@ -35,6 +35,8 @@ GEngine::~GEngine() {}
 
 std::unique_ptr<GEngine> GEngine::Create(const GEngineDesc &desc)
 {
+    glEnable(GL_BLEND);
+
     std::unique_ptr<GEngineResources> resources =
         GEngineResources::Create(desc);
 

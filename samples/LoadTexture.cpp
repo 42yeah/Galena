@@ -111,8 +111,8 @@ public:
         }
 
         mpGameFramebuffer = mEngine->CreateFramebuffer(300, 300);
-        mRenderDesc.pDstFramebuffer = nullptr;
-        mRenderDesc.clearColor = GColor(1.0f, 0.5f, 0.0f, 1.0f);
+        mRenderDesc.pDstFramebuffer = mpGameFramebuffer;
+        mRenderDesc.clearColor = GColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
 public:
@@ -120,8 +120,8 @@ public:
     {
         mEngine->Render(mRenderDesc);
 
-        // mEngine->RenderPostprocess(
-        //     nullptr, mpGameFramebuffer, galena::GPostprocessTypeBloom);
+        mEngine->RenderPostprocess(
+            nullptr, mpGameFramebuffer, galena::GPostprocessTypeBloom);
     }
 
 private:
