@@ -14,6 +14,8 @@ std::unique_ptr<GImage> LoadStbImage(const void *pData, size_t size)
     int32_t height = 0;
     int32_t channels = 0;
 
+    stbi_set_flip_vertically_on_load(false);
+
     stbi_uc *pDecodedData =
         stbi_load_from_memory(static_cast<const stbi_uc *>(pData), size, &width,
             &height, &channels, 0);

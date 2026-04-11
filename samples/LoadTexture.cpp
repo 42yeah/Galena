@@ -28,7 +28,7 @@ void Loop()
 {
     gEngine->Clear(1.0f, 0.0f, 1.0f, 1.0f);
 
-    gEngine->RenderSprite(GSampleResourceMonde, 0, 0, 0, 0, 0, 0, 0, 0);
+    gEngine->RenderSprite(GSampleResourceMonde, -100, 0, 100, 100, 16, 48, 16, 16);
 }
 
 int32_t main()
@@ -59,6 +59,7 @@ int32_t main()
         return 1;
 
     gEngine = std::move(engine);
+    gEngine->SetRenderSurfaceSize(300, 300);
 
     emscripten_set_main_loop(Loop, 0, true);
 

@@ -14,7 +14,7 @@ GEngineData GetEngineData()
         GetCommon_vs(), GetDebug_fs(), std::move(debugShaderUniforms));
 
     std::vector<std::string> texturedQuadUniforms = {
-        "transform", "sampleTexture"};
+        "transform", "sampleTransform", "sampleTexture"};
 
     data.shaderData[GShaderKeyTexturedQuad] = GShaderData(
         GetCommon_vs(), GetTexturedQuad_fs(), std::move(texturedQuadUniforms));

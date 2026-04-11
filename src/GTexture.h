@@ -23,7 +23,10 @@ enum EGTextureWrapMode
 class GTexture
 {
 public:
-    explicit GTexture(GLuint texture) : mTexture(texture) {}
+    explicit GTexture(GLuint texture, uint32_t width, uint32_t height)
+        : mTexture(texture), mWidth(width), mHeight(height)
+    {
+    }
 
     ~GTexture();
 
@@ -41,12 +44,19 @@ public:
         {
             scope();
         }
-        
+
         glBindTexture(GL_TEXTURE_2D, GL_NONE);
     }
 
+    uint32_t Width() const { return mWidth; }
+
+    uint32_t Height() const { return mHeight; }
+
 private:
     const GLuint mTexture = GL_NONE;
+
+    const uint32_t mWidth = 0;
+    const uint32_t mHeight = 0;
 };
 
 }  // namespace galena

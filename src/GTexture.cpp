@@ -65,7 +65,7 @@ std::unique_ptr<GTexture> GTexture::Create(const GImage &image,
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0,
         GL_RGBA, GL_UNSIGNED_BYTE, image.data.get());
 
-    return std::make_unique<GTexture>(texture);
+    return std::make_unique<GTexture>(texture, image.width, image.height);
 }
 
 }  // namespace galena
