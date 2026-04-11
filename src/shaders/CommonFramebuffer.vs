@@ -1,0 +1,15 @@
+#version 300 es
+
+precision highp float;
+
+layout (location = 0) in vec3 aPos;
+
+out vec2 uv;
+
+void main()
+{
+    vec4 position = vec4(aPos, 1.0);
+    uv = vec2(aPos.xy * 0.5 + 0.5);
+
+    gl_Position = position;
+}
