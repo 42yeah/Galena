@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GEngineDesc.h"
+
 #include "Galena/GPostprocess.h"
 #include "Galena/GRenderDesc.h"
 
@@ -12,6 +13,7 @@ namespace galena {
 
 class GEngineResources;
 class GFramebuffer;
+class GPostprocessRenderer;
 
 class GEngine
 {
@@ -43,6 +45,7 @@ public:
 
 private:
     const std::unique_ptr<GEngineResources> mEngineResources;
+    const std::unique_ptr<GPostprocessRenderer> mPostprocessRenderer;
 
     uint32_t mWidth = 0;
     uint32_t mHeight = 0;

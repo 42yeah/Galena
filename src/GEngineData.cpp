@@ -24,6 +24,11 @@ GEngineData GetEngineData()
     data.shaderData[GShaderKeyInvert] = GShaderData(
         GetCommonFramebuffer_vs(), GetInvert_fs(), std::move(invertUniforms));
 
+    std::vector<std::string> bloomUniforms = {"sampleTexture", "horizontal"};
+
+    data.shaderData[GShaderKeyBloom] = GShaderData(
+        GetCommonFramebuffer_vs(), GetBloom_fs(), std::move(bloomUniforms));
+
     return data;
 }
 

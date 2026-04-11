@@ -4,8 +4,10 @@
 #include "GEngineResources.h"
 #include "GFramebuffer.h"
 #include "GHwBuffer.h"
+#include "GPostprocessRenderer.h"
 #include "GShader.h"
 #include "GTexture.h"
+
 #include "Galena/GPostprocess.h"
 #include "Galena/GRenderDesc.h"
 
@@ -22,7 +24,9 @@
 namespace galena {
 
 GEngine::GEngine(std::unique_ptr<GEngineResources> &&resources)
-    : mEngineResources(std::move(resources))
+    : mEngineResources(std::move(resources)),
+      mPostprocessRenderer(
+          std::make_unique<GPostprocessRenderer>(mEngineResources.get()))
 {
 }
 
@@ -146,49 +150,8 @@ bool GEngine::RenderSprite(const GRenderSpriteDesc &spriteDesc) const
 bool GEngine::RenderPostprocess(GFramebuffer *pDstFramebuffer,
     GFramebuffer *pSrcFramebuffer, EGPostprocessType postprocType) const
 {
-    // Under the hood, a postprocess is a full-screen blit with specific shaders
-
-    if (!pSrcFramebuffer)
-        return false;
-
-    GTexture *pTexture = pSrcFramebuffer->FramebufferTexture();
-    if (!pTexture)
-        return false;
-
-    GShader *pShader = nullptr;
-
-    switch (postprocType)
-    {
-    case GPostprocessTypeInvert:
-        pShader = mEngineResources->Shader(GShaderKeyInvert);
-        break;
-
-    default:
-        break;
-    }
-
-    if (!pShader)
-        return false;
-
-    pShader->Bind([&] {
-        pTexture->BindAndActive(0, [&] {
-            glUniform1i(pShader->Location("sampleTexture"), 0);
-
-            mEngineResources->QuadBuffer()->Bind([&] {
-                if (pDstFramebuffer)
-                {
-                    pDstFramebuffer->Bind(
-                        [] { glDrawArrays(GL_TRIANGLES, 0, 6); });
-                }
-                else
-                {
-                    glDrawArrays(GL_TRIANGLES, 0, 6);
-                }
-            });
-        });
-    });
-
-    return true;
+    return mPostprocessRenderer->RenderPostprocess(
+        pDstFramebuffer, pSrcFramebuffer, postprocType);
 }
 
 bool GEngine::Render(const GRenderDesc &desc) const

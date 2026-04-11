@@ -122,11 +122,8 @@ public:
 
         mEngine->Render(mRenderDesc);
 
-        mEngine->RenderPostprocess(mpGGameFramebuffer, mpGameFramebuffer,
-            galena::GPostprocessTypeInvert);
-
-        mEngine->RenderPostprocess(
-            nullptr, mpGGameFramebuffer, galena::GPostprocessTypeInvert);
+        mEngine->RenderPostprocess(nullptr, mpGameFramebuffer,
+            galena::GPostprocessTypeBloom);
     }
 
 private:

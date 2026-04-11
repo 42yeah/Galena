@@ -20,6 +20,7 @@ set(GALENA_SRC
     GFramebuffer.cpp
     GHwBuffer.cpp
     GImage.cpp
+    GPostprocessRenderer.cpp
     GTexture.cpp
     GShader.cpp
     GVersion.cpp)
