@@ -5,7 +5,8 @@ namespace galena {
 enum EGPostprocessType
 {
     GPostprocessTypeInvert = 0,
-    GPostprocessTypeBloom
+    GPostprocessTypeBloom,
+    GPostprocessTypeCRT,
 };
 
 }  // namespace galena

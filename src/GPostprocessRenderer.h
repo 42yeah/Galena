@@ -5,6 +5,7 @@
 #include "GFramebuffer.h"
 
 #include "GShader.h"
+#include "GTexture.h"
 #include "Galena/GPostprocess.h"
 
 #include <memory>
@@ -36,6 +37,9 @@ private:
 
     bool RenderPostprocessBloom(GFramebuffer *pDstFramebuffer,
         GTexture *pSrcTexture, uint32_t numIterations);
+
+    bool RenderPostprocessCRT(
+        GFramebuffer *pDstFramebuffer, GTexture *pSrcTexture);
 
 private:
     GEngineResources *const mpEngineResources;

@@ -35,6 +35,12 @@ GEngineData GetEngineData()
     data.shaderData[GShaderKeyBlend] = GShaderData(
         GetCommonFramebuffer_vs(), GetBlend_fs(), std::move(blendUniforms));
 
+    std::vector<std::string> crtUniforms = {
+        "sampleTexture", "framebufferResolution"};
+
+    data.shaderData[GShaderKeyCRT] = GShaderData(
+        GetCommonFramebuffer_vs(), GetCRT_fs(), std::move(crtUniforms));
+
     return data;
 }
 

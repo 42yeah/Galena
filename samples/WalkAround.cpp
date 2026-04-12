@@ -221,7 +221,7 @@ public:
         mEngine->Render(mPlayerRenderDesc);
 
         mEngine->RenderPostprocess(
-            nullptr, mpGameFramebuffer, GPostprocessTypeBloom);
+            nullptr, mpGameFramebuffer, GPostprocessTypeCRT);
     }
 
     void SetKeyState(EGameKeyStateBit bit, bool isDown)

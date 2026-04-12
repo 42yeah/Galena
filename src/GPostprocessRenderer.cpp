@@ -4,6 +4,7 @@
 #include "GRenderUtils.h"
 #include "GShader.h"
 #include "GTexture.h"
+#include "Galena/GPostprocess.h"
 
 namespace galena {
 
@@ -29,6 +30,9 @@ bool GPostprocessRenderer::RenderPostprocess(GFramebuffer *pDstFramebuffer,
         // Complex postprocesses gets their own functions
         return RenderPostprocessBloom(
             pDstFramebuffer, pTexture, NumGaussianBlurIterations);
+
+    case GPostprocessTypeCRT:
+        return RenderPostprocessCRT(pDstFramebuffer, pTexture);
 
     default:
         return false;
@@ -150,6 +154,37 @@ bool GPostprocessRenderer::RenderPostprocessBloom(GFramebuffer *pDstFramebuffer,
 
                     BindFramebufferOrPresent(pDstFramebuffer,
                         [&] { glDrawArrays(GL_TRIANGLES, 0, 6); });
+                });
+            });
+        });
+    });
+
+    return true;
+}
+
+bool GPostprocessRenderer::RenderPostprocessCRT(
+    GFramebuffer *pDstFramebuffer, GTexture *pSrcTexture)
+{
+    if (!pSrcTexture)
+        return false;
+
+    GShader *pCRTShader = mpEngineResources->Shader(GShaderKeyCRT);
+    if (!pCRTShader)
+        return false;
+
+    const float targetWidth = static_cast<float>(pDstFramebuffer->Width());
+    const float targetHeight = static_cast<float>(pDstFramebuffer->Height());
+
+    BindFramebufferOrPresent(pDstFramebuffer, [&] {
+        mpEngineResources->QuadBuffer()->Bind([&] {
+            pCRTShader->Bind([&] {
+                pSrcTexture->BindAndActive(0, [&] {
+                    glUniform1i(pCRTShader->Location("sampleTexture"), 0);
+
+                    glUniform2f(pCRTShader->Location("framebufferResolution"),
+                        targetWidth, targetHeight);
+
+                    glDrawArrays(GL_TRIANGLES, 0, 6);
                 });
             });
         });
