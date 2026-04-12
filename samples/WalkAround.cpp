@@ -194,6 +194,15 @@ public:
 
         playerDesc.x = static_cast<int32_t>(mPlayerX);
         playerDesc.y = static_cast<int32_t>(mPlayerY);
+
+        if (speedX < 0.0f)
+        {
+            playerDesc.sx = 3 * SpriteSize;
+        }
+        else if (speedX > 0.0f)
+        {
+            playerDesc.sx = 4 * SpriteSize;
+        }
     }
 
     void Loop()
