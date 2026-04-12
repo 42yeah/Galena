@@ -43,6 +43,29 @@ declare_external_deps(glm
     e8642318a099b9b6ff432bed8b8b90b4226a9edd
     glm::glm)
 
+# Configure version
+
+find_package(Git)
+
+set(GALENA_VERSION 0)
+
+if (${Git_FOUND})
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+        OUTPUT_VARIABLE GIT_COMMIT_HASH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET)
+
+    string(SUBSTRING "${GIT_COMMIT_HASH}" 0 8 GALENA_VERSION)
+else ()
+    message(WARNING "Git executable not found: setting version to 0")
+endif ()
+
+configure_file(
+    "${GALENA_SRC_ROOT}/GVersion.cpp.in"
+    "${GALENA_SRC_ROOT}/GVersion.cpp")
+
 # Setup shaders
 
 set(GALENA_SHADER_SRC_HEADER)
@@ -78,12 +101,14 @@ endmacro ()
 process_shaders("vs")
 process_shaders("fs")
 
-configure_file("${GALENA_SRC_ROOT}/shaders/GShaderData.h.in"
+configure_file(
+    "${GALENA_SRC_ROOT}/shaders/GShaderData.h.in"
     "${GALENA_SRC_ROOT}/shaders/GShaderData.h")
 
 set(GALENA_SHADER_SRC_IMPL_FILE "${GALENA_SRC_ROOT}/shaders/GShaderData.cpp")
 
-configure_file("${GALENA_SRC_ROOT}/shaders/GShaderData.cpp.in"
+configure_file(
+    "${GALENA_SRC_ROOT}/shaders/GShaderData.cpp.in"
     "${GALENA_SHADER_SRC_IMPL_FILE}")
 
 # Setup library
