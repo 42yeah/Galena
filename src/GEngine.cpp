@@ -161,15 +161,15 @@ bool GEngine::Render(const GRenderDesc &desc) const
 {
     bool isOk = true;
 
-    if (desc.clearColor.has_value())
-    {
-        const GColor &color = *desc.clearColor;
-
-        glClearColor(color.r, color.g, color.b, color.a);
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-
     BindFramebufferOrPresent(desc.pDstFramebuffer, [&] {
+        if (desc.clearColor.has_value())
+        {
+            const GColor &color = *desc.clearColor;
+
+            glClearColor(color.r, color.g, color.b, color.a);
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
+
         for (const GRenderSpriteDesc &spriteDesc : desc.spriteDescs)
         {
             isOk = isOk && RenderSprite(spriteDesc);

@@ -2,9 +2,15 @@
 #include "Galena/GPostprocess.h"
 #include "Galena/GRenderDesc.h"
 
+#include <bitset>
+#include <emscripten/em_types.h>
+#include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
 #include <emscripten/html5_webgl.h>
 
+#include <iostream>
 #include <memory>
+#include <optional>
 #include <random>
 
 #include <cstdint>
@@ -97,6 +103,15 @@ void GenerateWorld(GRenderDesc &dstRenderDesc, uint32_t width, uint32_t height)
     }
 }
 
+enum EGameKeyStateBit
+{
+    GameKeyStateLeft = 0,
+    GameKeyStateDown,
+    GameKeyStateRight,
+    GameKeyStateUp,
+    GameKeyStateCount,
+};
+
 class Game
 {
 public:
@@ -105,6 +120,15 @@ public:
         : mEngine(std::move(engine)), mpGameFramebuffer(pGameFramebuffer),
           mWorld(std::move(world))
     {
+        // Don't clear since the last one already has
+        mPlayerRenderDesc.pDstFramebuffer = mpGameFramebuffer;
+        mPlayerRenderDesc.clearColor = std::nullopt;
+
+        const GRenderSpriteDesc playerSpriteDesc(MondeTexture, 0, 0,
+            SpriteRenderSize, SpriteRenderSize, 3 * SpriteSize, 5 * SpriteSize,
+            SpriteSize, SpriteSize);
+
+        mPlayerRenderDesc.spriteDescs.emplace_back(playerSpriteDesc);
     }
 
 public:
@@ -132,13 +156,66 @@ public:
     }
 
 public:
+    void Update()
+    {
+        // Move the character around
+
+        GRenderSpriteDesc &playerDesc = mPlayerRenderDesc.spriteDescs.front();
+
+        constexpr float PlayerSpeed =
+            static_cast<float>(SpriteRenderSize) * 2.0f;
+
+        float speedX = 0.0f;
+        float speedY = 0.0f;
+
+        if (mKeyStates.test(GameKeyStateLeft))
+            speedX = -1.0f;
+
+        if (mKeyStates.test(GameKeyStateDown))
+            speedY = -1.0f;
+
+        if (mKeyStates.test(GameKeyStateRight))
+            speedX = 1.0f;
+
+        if (mKeyStates.test(GameKeyStateUp))
+            speedY = 1.0f;
+
+        // Normalize speed
+        const float speedSqr = speedX * speedX + speedY * speedY;
+        if (speedSqr < 0.001f)
+            return;
+
+        const float speedNor = 1.0f / sqrtf(speedSqr);
+
+        std::cout << speedX * speedNor << ", " << speedY * speedNor
+            << std::endl;
+        
+        playerDesc.x += mDeltaTimeInSeconds * speedX * speedNor * PlayerSpeed;
+        playerDesc.y += mDeltaTimeInSeconds * speedY * speedNor * PlayerSpeed;
+    }
+
     void Loop()
     {
+        const double thisInstant = emscripten_get_now();
+
+        mDeltaTimeInSeconds =
+            static_cast<float>((thisInstant - mPrevInstantInMs) * 0.001);
+
+        mPrevInstantInMs = thisInstant;
+
+        Update();
+
         mEngine->Clear(0.0f, 0.0f, 0.0f, 1.0f);
         mEngine->Render(mWorld);
+        mEngine->Render(mPlayerRenderDesc);
 
         mEngine->RenderPostprocess(
             nullptr, mpGameFramebuffer, GPostprocessTypeBloom);
+    }
+
+    void SetKeyState(EGameKeyStateBit bit, bool isDown)
+    {
+        mKeyStates.set(bit, isDown);
     }
 
 private:
@@ -146,11 +223,61 @@ private:
     GFramebuffer *const mpGameFramebuffer;
 
     const GRenderDesc mWorld;
+
+    GRenderDesc mPlayerRenderDesc;
+    std::bitset<GameKeyStateCount> mKeyStates;
+
+    double mPrevInstantInMs = 0.0;
+    float mDeltaTimeInSeconds = 0.0f;
 };
 
 std::unique_ptr<Game> gGameInstance = nullptr;
 
 void Loop() { gGameInstance->Loop(); }
+
+constexpr uint32_t LeftKey = 65;   // A
+constexpr uint32_t DownKey = 83;   // S
+constexpr uint32_t RightKey = 68;  // D
+constexpr uint32_t UpKey = 87;     // W
+
+void SetGameKeyState(uint32_t keyCode, bool isDown)
+{
+    switch (keyCode)
+    {
+    case LeftKey:
+        gGameInstance->SetKeyState(GameKeyStateLeft, isDown);
+        break;
+
+    case DownKey:
+        gGameInstance->SetKeyState(GameKeyStateDown, isDown);
+        break;
+
+    case RightKey:
+        gGameInstance->SetKeyState(GameKeyStateRight, isDown);
+        break;
+
+    case UpKey:
+        gGameInstance->SetKeyState(GameKeyStateUp, isDown);
+        break;
+
+    default:
+        break;
+    }
+}
+
+bool OnKeyDown(
+    int eventType, const EmscriptenKeyboardEvent *pKeyEvent, void *pUserData)
+{
+    SetGameKeyState(pKeyEvent->keyCode, true);
+    return true;
+}
+
+bool OnKeyUp(
+    int eventType, const EmscriptenKeyboardEvent *pKeyEvent, void *pUserData)
+{
+    SetGameKeyState(pKeyEvent->keyCode, false);
+    return true;
+}
 
 int32_t main()
 {
@@ -165,6 +292,12 @@ int32_t main()
     emscripten_webgl_make_context_current(ctx);
 
     gGameInstance = Game::Create();
+
+    emscripten_set_keydown_callback(
+        EMSCRIPTEN_EVENT_TARGET_WINDOW, nullptr, true, OnKeyDown);
+
+    emscripten_set_keyup_callback(
+        EMSCRIPTEN_EVENT_TARGET_WINDOW, nullptr, true, OnKeyUp);
 
     emscripten_set_main_loop(Loop, 0, true);
 
