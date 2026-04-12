@@ -1,3 +1,4 @@
+src/GVersion.cpp
 src/shaders/*.cpp
 src/shaders/*.h
 build
