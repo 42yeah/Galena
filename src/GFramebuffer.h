@@ -16,8 +16,8 @@ public:
     ~GFramebuffer();
 
 public:
-    static std::unique_ptr<GFramebuffer> CreateFramebuffer(
-        uint32_t width, uint32_t height);
+    static std::unique_ptr<GFramebuffer> CreateFramebuffer(uint32_t width,
+        uint32_t height, EGTextureFilter minFilter, EGTextureFilter magFilter);
 
 public:
     template <typename F> void Bind(F &&scope)

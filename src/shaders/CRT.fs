@@ -113,5 +113,7 @@ void main()
     outColor *= maskWeight;
     outColor = pow(outColor, vec3(1.0 / GammaOutput));
 
-    color = vec4(outColor, 1.0);
+    const float BrightnessModifier = 1.2;
+
+    color = vec4(BrightnessModifier * outColor, 1.0);
 }

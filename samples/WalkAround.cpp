@@ -17,12 +17,15 @@
 
 using namespace galena;
 
-constexpr uint32_t CanvasWidth = 300;
-constexpr uint32_t CanvasHeight = 300;
+constexpr uint32_t GameFramebufferWidth = 150;
+constexpr uint32_t GameFramebufferHeight = 150;
+
+constexpr uint32_t CanvasWidth = 800;
+constexpr uint32_t CanvasHeight = 800;
 
 constexpr uint32_t MondeTexture = 0;
 constexpr uint32_t SpriteSize = 16;
-constexpr uint32_t SpriteRenderSize = 64;
+constexpr uint32_t SpriteRenderSize = 32;
 
 constexpr uint32_t RoomWidth = 6;
 constexpr uint32_t RoomHeight = 6;
@@ -95,8 +98,8 @@ void GenerateWorld(GRenderDesc &dstRenderDesc, uint32_t width, uint32_t height)
                 }
             }
 
-            spriteDesc.x = x * SpriteRenderSize - 200;
-            spriteDesc.y = y * SpriteRenderSize - 200;
+            spriteDesc.x = x * SpriteRenderSize - 50;
+            spriteDesc.y = y * SpriteRenderSize - 50;
 
             dstRenderDesc.spriteDescs.emplace_back(spriteDesc);
         }
@@ -141,7 +144,8 @@ public:
         engine->SetRenderSurfaceSize(CanvasWidth, CanvasHeight);
 
         GFramebuffer *pGameFramebuffer = engine->CreateFramebuffer(
-            engine->RenderWidth(), engine->RenderHeight());
+            GameFramebufferWidth, GameFramebufferHeight, GTextureFilterNearest,
+            GTextureFilterNearest);
 
         if (!pGameFramebuffer)
             return nullptr;

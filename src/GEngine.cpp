@@ -2,6 +2,7 @@
 
 #include "GEngineData.h"
 #include "GEngineResources.h"
+#include "GEngineState.h"
 #include "GFramebuffer.h"
 #include "GHwBuffer.h"
 #include "GPostprocessRenderer.h"
@@ -26,8 +27,9 @@ namespace galena {
 
 GEngine::GEngine(std::unique_ptr<GEngineResources> &&resources)
     : mEngineResources(std::move(resources)),
-      mPostprocessRenderer(
-          std::make_unique<GPostprocessRenderer>(mEngineResources.get()))
+      mEngineState(std::make_unique<GEngineState>()),
+      mPostprocessRenderer(std::make_unique<GPostprocessRenderer>(
+          *mEngineResources, *mEngineState))
 {
 }
 
@@ -52,10 +54,14 @@ std::unique_ptr<GEngine> GEngine::Create(const GEngineDesc &desc)
     return std::move(engine);
 }
 
+uint32_t GEngine::RenderWidth() const { return mEngineState->renderWidth; }
+
+uint32_t GEngine::RenderHeight() const { return mEngineState->renderHeight; }
+
 void GEngine::SetRenderSurfaceSize(uint32_t width, uint32_t height)
 {
-    mWidth = width;
-    mHeight = height;
+    mEngineState->renderWidth = width;
+    mEngineState->renderHeight = height;
 }
 
 void GEngine::Clear(float r, float g, float b, float a) const
@@ -79,7 +85,74 @@ void GEngine::RenderDebugTriangle() const
     });
 }
 
-bool GEngine::RenderSprite(const GRenderSpriteDesc &spriteDesc) const
+bool GEngine::RenderPostprocess(GFramebuffer *pDstFramebuffer,
+    GFramebuffer *pSrcFramebuffer, EGPostprocessType postprocType) const
+{
+    return mPostprocessRenderer->RenderPostprocess(
+        pDstFramebuffer, pSrcFramebuffer, postprocType);
+}
+
+bool GEngine::Render(const GRenderDesc &desc) const
+{
+    bool isOk = true;
+
+    BindFramebufferOrPresent(desc.pDstFramebuffer, [&] {
+        if (desc.clearColor.has_value())
+        {
+            const GColor &color = *desc.clearColor;
+
+            glClearColor(color.r, color.g, color.b, color.a);
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
+
+        uint32_t renderWidth = mEngineState->renderWidth;
+        uint32_t renderHeight = mEngineState->renderHeight;
+
+        if (desc.pDstFramebuffer)
+        {
+            renderWidth = desc.pDstFramebuffer->Width();
+            renderHeight = desc.pDstFramebuffer->Height();
+        }
+
+        for (const GRenderSpriteDesc &spriteDesc : desc.spriteDescs)
+        {
+            isOk = isOk && RenderSprite(renderWidth, renderHeight, spriteDesc);
+        }
+    });
+
+    return isOk;
+}
+
+GFramebuffer *GEngine::CreateFramebuffer(uint32_t width, uint32_t height,
+    EGTextureFilter minFilter, EGTextureFilter magFilter)
+{
+    std::unique_ptr<GFramebuffer> framebuffer =
+        GFramebuffer::CreateFramebuffer(width, height, minFilter, magFilter);
+
+    if (!framebuffer)
+        return nullptr;
+
+    mFramebuffers.emplace_back(std::move(framebuffer));
+
+    return mFramebuffers.back().get();
+}
+
+void GEngine::ReleaseFramebuffer(GFramebuffer *pFramebuffer)
+{
+    auto cit = std::find_if(mFramebuffers.cbegin(), mFramebuffers.cend(),
+        [pFramebuffer](const std::unique_ptr<GFramebuffer> &framebuffer) {
+            return framebuffer.get() == pFramebuffer;
+        });
+
+    // Double free maybe? In any case we did not produce this
+    if (cit == mFramebuffers.cend())
+        return;
+
+    mFramebuffers.erase(cit);
+}
+
+bool GEngine::RenderSprite(uint32_t renderWidth, uint32_t renderHeight,
+    const GRenderSpriteDesc &spriteDesc) const
 {
     GShader *pShader = mEngineResources->Shader(GShaderKeyTexturedQuad);
     GTexture *pTexture = mEngineResources->Texture(spriteDesc.textureId);
@@ -87,8 +160,8 @@ bool GEngine::RenderSprite(const GRenderSpriteDesc &spriteDesc) const
     if (!pShader || !pTexture)
         return false;
 
-    const glm::vec2 surfaceSize =
-        glm::vec2(static_cast<float>(mWidth), static_cast<float>(mHeight));
+    const glm::vec2 surfaceSize = glm::vec2(
+        static_cast<float>(renderWidth), static_cast<float>(renderHeight));
 
     if (surfaceSize.x == 0.0f || surfaceSize.y == 0.0)
         return false;
@@ -148,62 +221,6 @@ bool GEngine::RenderSprite(const GRenderSpriteDesc &spriteDesc) const
     });
 
     return true;
-}
-
-bool GEngine::RenderPostprocess(GFramebuffer *pDstFramebuffer,
-    GFramebuffer *pSrcFramebuffer, EGPostprocessType postprocType) const
-{
-    return mPostprocessRenderer->RenderPostprocess(
-        pDstFramebuffer, pSrcFramebuffer, postprocType);
-}
-
-bool GEngine::Render(const GRenderDesc &desc) const
-{
-    bool isOk = true;
-
-    BindFramebufferOrPresent(desc.pDstFramebuffer, [&] {
-        if (desc.clearColor.has_value())
-        {
-            const GColor &color = *desc.clearColor;
-
-            glClearColor(color.r, color.g, color.b, color.a);
-            glClear(GL_COLOR_BUFFER_BIT);
-        }
-
-        for (const GRenderSpriteDesc &spriteDesc : desc.spriteDescs)
-        {
-            isOk = isOk && RenderSprite(spriteDesc);
-        }
-    });
-
-    return isOk;
-}
-
-GFramebuffer *GEngine::CreateFramebuffer(uint32_t width, uint32_t height)
-{
-    std::unique_ptr<GFramebuffer> framebuffer =
-        GFramebuffer::CreateFramebuffer(width, height);
-
-    if (!framebuffer)
-        return nullptr;
-
-    mFramebuffers.emplace_back(std::move(framebuffer));
-
-    return mFramebuffers.back().get();
-}
-
-void GEngine::ReleaseFramebuffer(GFramebuffer *pFramebuffer)
-{
-    auto cit = std::find_if(mFramebuffers.cbegin(), mFramebuffers.cend(),
-        [pFramebuffer](const std::unique_ptr<GFramebuffer> &framebuffer) {
-            return framebuffer.get() == pFramebuffer;
-        });
-
-    // Double free maybe? In any case we did not produce this
-    if (cit == mFramebuffers.cend())
-        return;
-
-    mFramebuffers.erase(cit);
 }
 
 }  // namespace galena

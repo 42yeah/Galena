@@ -2,6 +2,7 @@
 
 #include "GEngineData.h"
 #include "GEngineResources.h"
+#include "GEngineState.h"
 #include "GFramebuffer.h"
 
 #include "GShader.h"
@@ -19,8 +20,9 @@ namespace galena {
 class GPostprocessRenderer
 {
 public:
-    GPostprocessRenderer(GEngineResources *pEngineResources)
-        : mpEngineResources(pEngineResources)
+    GPostprocessRenderer(const GEngineResources &engineResources,
+        const GEngineState &pEngineState)
+        : mpEngineResources(&engineResources), mpEngineState(&pEngineState)
     {
     }
 
@@ -42,7 +44,8 @@ private:
         GFramebuffer *pDstFramebuffer, GTexture *pSrcTexture);
 
 private:
-    GEngineResources *const mpEngineResources;
+    const GEngineResources *const mpEngineResources;
+    const GEngineState *const mpEngineState;
 
     std::unique_ptr<GFramebuffer> mPingpongFramebuffers[2];
     uint32_t mCurrPingpongIdx = 0;

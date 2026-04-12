@@ -6,6 +6,8 @@
 #include "GTexture.h"
 #include "Galena/GPostprocess.h"
 
+#include <GLES3/gl3.h>
+
 namespace galena {
 
 constexpr uint32_t NumGaussianBlurIterations = 5;
@@ -56,7 +58,8 @@ GFramebuffer *GPostprocessRenderer::AcquireNextFramebuffer(
         return pAvailableFramebuffer;
 
     std::unique_ptr<GFramebuffer> newFramebuffer =
-        GFramebuffer::CreateFramebuffer(width, height);
+        GFramebuffer::CreateFramebuffer(
+            width, height, GTextureFilterLinear, GTextureFilterLinear);
 
     GFramebuffer *pNewFramebuffer = newFramebuffer.get();
     mPingpongFramebuffers[currPingpongIdx] = std::move(newFramebuffer);
@@ -85,7 +88,7 @@ bool GPostprocessRenderer::RenderPostprocessSimple(
         });
     });
 
-    return false;
+    return true;
 }
 
 bool GPostprocessRenderer::RenderPostprocessBloom(GFramebuffer *pDstFramebuffer,
@@ -172,8 +175,14 @@ bool GPostprocessRenderer::RenderPostprocessCRT(
     if (!pCRTShader)
         return false;
 
-    const float targetWidth = static_cast<float>(pDstFramebuffer->Width());
-    const float targetHeight = static_cast<float>(pDstFramebuffer->Height());
+    float targetWidth = mpEngineState->renderWidth;
+    float targetHeight = mpEngineState->renderHeight;
+
+    if (pDstFramebuffer)
+    {
+        targetWidth = static_cast<float>(pDstFramebuffer->Width());
+        targetHeight = static_cast<float>(pDstFramebuffer->Height());
+    }
 
     BindFramebufferOrPresent(pDstFramebuffer, [&] {
         mpEngineResources->QuadBuffer()->Bind([&] {
@@ -189,6 +198,11 @@ bool GPostprocessRenderer::RenderPostprocessCRT(
             });
         });
     });
+
+    return true;
+
+    if (!pSrcTexture)
+        return false;
 
     return true;
 }

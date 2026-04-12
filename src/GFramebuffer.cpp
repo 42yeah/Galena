@@ -15,14 +15,13 @@ GFramebuffer::~GFramebuffer()
     }
 }
 
-std::unique_ptr<GFramebuffer> GFramebuffer::CreateFramebuffer(
-    uint32_t width, uint32_t height)
+std::unique_ptr<GFramebuffer> GFramebuffer::CreateFramebuffer(uint32_t width,
+    uint32_t height, EGTextureFilter minFilter, EGTextureFilter magFilter)
 {
     // To create a framebuffer, we must first create a framebuffer texture
 
     std::unique_ptr<GTexture> texture = GTexture::Create(width, height,
-        GTextureFilterLinear, GTextureFilterLinear, GTextureWrapModeRepeat,
-        GTextureWrapModeRepeat);
+        minFilter, magFilter, GTextureWrapModeRepeat, GTextureWrapModeRepeat);
 
     if (!texture)
         return nullptr;

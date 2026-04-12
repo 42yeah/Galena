@@ -2,23 +2,13 @@
 
 #include "GImage.h"
 
+#include "Galena/GTextureSampler.h"
+
 #include <GLES3/gl3.h>
 
 #include <memory>
 
 namespace galena {
-
-enum EGTextureFilter
-{
-    GTextureFilterNearest = 0,
-    GTextureFilterLinear
-};
-
-enum EGTextureWrapMode
-{
-    GTextureWrapModeRepeat = 0,
-    GTextureWrapModeClampToEdge
-};
 
 class GTexture
 {

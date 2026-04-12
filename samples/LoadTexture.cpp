@@ -2,6 +2,7 @@
 #include "Galena/GEngineDesc.h"
 #include "Galena/GPostprocess.h"
 #include "Galena/GRenderDesc.h"
+#include "Galena/GTextureSampler.h"
 
 #include <emscripten/fetch.h>
 #include <emscripten/html5.h>
@@ -110,7 +111,9 @@ public:
             }
         }
 
-        mpGameFramebuffer = mEngine->CreateFramebuffer(300, 300);
+        mpGameFramebuffer = mEngine->CreateFramebuffer(
+            300, 300, GTextureFilterLinear, GTextureFilterLinear);
+
         mRenderDesc.pDstFramebuffer = mpGameFramebuffer;
         mRenderDesc.clearColor = GColor(0.0f, 0.0f, 0.0f, 0.0f);
     }

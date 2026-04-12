@@ -1,9 +1,9 @@
 #pragma once
 
 #include "GEngineDesc.h"
-
-#include "Galena/GPostprocess.h"
-#include "Galena/GRenderDesc.h"
+#include "GPostprocess.h"
+#include "GRenderDesc.h"
+#include "GTextureSampler.h"
 
 #include <memory>
 
@@ -14,6 +14,7 @@ namespace galena {
 class GEngineResources;
 class GFramebuffer;
 class GPostprocessRenderer;
+class GEngineState;
 
 class GEngine
 {
@@ -26,34 +27,34 @@ public:
     static std::unique_ptr<GEngine> Create(const GEngineDesc &desc);
 
 public:
-    uint32_t RenderWidth() const { return mWidth; }
+    uint32_t RenderWidth() const;
 
-    uint32_t RenderHeight() const { return mHeight; }
+    uint32_t RenderHeight() const;
 
-public:
     void SetRenderSurfaceSize(uint32_t width, uint32_t height);
 
     void Clear(float r, float g, float b, float a) const;
 
     void RenderDebugTriangle() const;
 
-    bool RenderSprite(const GRenderSpriteDesc &spriteDesc) const;
-
     bool RenderPostprocess(GFramebuffer *pDstFramebuffer,
         GFramebuffer *pSrcFramebuffer, EGPostprocessType postprocType) const;
 
     bool Render(const GRenderDesc &desc) const;
 
-    GFramebuffer *CreateFramebuffer(uint32_t width, uint32_t height);
+    GFramebuffer *CreateFramebuffer(uint32_t width, uint32_t height,
+        EGTextureFilter minFilter, EGTextureFilter magFilter);
 
     void ReleaseFramebuffer(GFramebuffer *pFramebuffer);
 
 private:
-    const std::unique_ptr<GEngineResources> mEngineResources;
-    const std::unique_ptr<GPostprocessRenderer> mPostprocessRenderer;
+    bool RenderSprite(uint32_t renderWidth, uint32_t renderHeight,
+        const GRenderSpriteDesc &spriteDesc) const;
 
-    uint32_t mWidth = 0;
-    uint32_t mHeight = 0;
+private:
+    const std::unique_ptr<GEngineResources> mEngineResources;
+    const std::unique_ptr<GEngineState> mEngineState;
+    const std::unique_ptr<GPostprocessRenderer> mPostprocessRenderer;
 
     // Managed vector of framebuffers
     std::vector<std::unique_ptr<GFramebuffer>> mFramebuffers;
