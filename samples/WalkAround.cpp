@@ -186,9 +186,14 @@ public:
             return;
 
         const float speedNor = 1.0f / sqrtf(speedSqr);
+        const float norSpeedX = speedX * speedNor;
+        const float norSpeedY = speedY * speedNor;
 
-        playerDesc.x += mDeltaTimeInSeconds * speedX * speedNor * PlayerSpeed;
-        playerDesc.y += mDeltaTimeInSeconds * speedY * speedNor * PlayerSpeed;
+        mPlayerX += mDeltaTimeInSeconds * norSpeedX * PlayerSpeed;
+        mPlayerY += mDeltaTimeInSeconds * norSpeedY * PlayerSpeed;
+
+        playerDesc.x = static_cast<int32_t>(mPlayerX);
+        playerDesc.y = static_cast<int32_t>(mPlayerY);
     }
 
     void Loop()
@@ -226,6 +231,9 @@ private:
 
     double mPrevInstantInMs = 0.0;
     float mDeltaTimeInSeconds = 0.0f;
+
+    float mPlayerX = 0.0f;
+    float mPlayerY = 0.0f;
 };
 
 std::unique_ptr<Game> gGameInstance = nullptr;
@@ -296,7 +304,7 @@ int32_t main()
     emscripten_set_keyup_callback(
         EMSCRIPTEN_EVENT_TARGET_WINDOW, nullptr, true, OnKeyUp);
 
-    emscripten_set_main_loop(Loop, 0, true);
+    emscripten_set_main_loop(Loop, 30, true);
 
     return 0;
 }
