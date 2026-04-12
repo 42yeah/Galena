@@ -187,9 +187,6 @@ public:
 
         const float speedNor = 1.0f / sqrtf(speedSqr);
 
-        std::cout << speedX * speedNor << ", " << speedY * speedNor
-            << std::endl;
-        
         playerDesc.x += mDeltaTimeInSeconds * speedX * speedNor * PlayerSpeed;
         playerDesc.y += mDeltaTimeInSeconds * speedY * speedNor * PlayerSpeed;
     }
