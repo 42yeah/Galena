@@ -26,6 +26,11 @@ public:
     static std::unique_ptr<GEngine> Create(const GEngineDesc &desc);
 
 public:
+    uint32_t RenderWidth() const { return mWidth; }
+
+    uint32_t RenderHeight() const { return mHeight; }
+
+public:
     void SetRenderSurfaceSize(uint32_t width, uint32_t height);
 
     void Clear(float r, float g, float b, float a) const;
