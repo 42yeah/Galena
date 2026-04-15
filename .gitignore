@@ -1,8 +1,8 @@
-src/GVersion.cpp
-src/shaders/*.cpp
-src/shaders/*.h
+engine/src/GVersion.cpp
+engine/src/shaders/*.cpp
+engine/src/shaders/*.h
 build
 compile_commands.json
 .clangd
-src/external/*
-!src/external/stb_image.h
+engine/src/external/*
+!engine/src/external/stb_image.h

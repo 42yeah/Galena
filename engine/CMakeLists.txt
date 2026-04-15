@@ -1,11 +1,12 @@
 include(FetchContent)
 
-set(CMAKE_CXX_STANDARD 17)
-
 set(GALENA_SRC_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(GALENA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set(GALENA_LIBRARY_NAME "${PROJECT_NAME}")
 set(GALENA_SAMPLE_WASM_DEPLOY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../html/js")
+
+set(GALENA_EXPORTS
+    GALENA_INCLUDE_DIR GALENA_LIBRARY_NAME)
 
 set(GALENA_SRC
     GEngine.cpp
@@ -110,7 +111,7 @@ configure_file(
 set(GALENA_LIBRARY_SRC)
 
 foreach (ENTRY ${GALENA_SRC})
-    LIST(APPEND GALENA_LIBRARY_SRC "${GALENA_SRC_ROOT}/${ENTRY}")
+    list(APPEND GALENA_LIBRARY_SRC "${GALENA_SRC_ROOT}/${ENTRY}")
 endforeach ()
 
 add_library(${GALENA_LIBRARY_NAME}
@@ -152,4 +153,8 @@ foreach (ENTRY ${GALENA_SAMPLES})
         target_link_options(${SAMPLE_NAME} PRIVATE
             --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/../html/assets/monde.png@/assets/monde.png)
     endif ()
+endforeach ()
+
+foreach (ENTRY ${GALENA_EXPORTS})
+    set(${ENTRY} ${${ENTRY}} PARENT_SCOPE)
 endforeach ()
