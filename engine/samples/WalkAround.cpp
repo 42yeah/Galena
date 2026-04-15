@@ -27,8 +27,8 @@ constexpr uint32_t MondeTexture = 0;
 constexpr uint32_t SpriteSize = 16;
 constexpr uint32_t SpriteRenderSize = 32;
 
-constexpr uint32_t RoomWidth = 6;
-constexpr uint32_t RoomHeight = 6;
+constexpr uint32_t RoomWidth = 5;
+constexpr uint32_t RoomHeight = 5;
 
 void GenerateWorld(GRenderDesc &dstRenderDesc, uint32_t width, uint32_t height)
 {
