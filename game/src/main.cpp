@@ -3,8 +3,8 @@
 #include <emscripten/emscripten.h>
 #include <emscripten/html5_webgl.h>
 
-#include <memory>
 #include <iostream>
+#include <memory>
 
 #include <cstdint>
 
@@ -15,10 +15,11 @@ std::unique_ptr<GGameInstance> gGameInstance = nullptr;
 void Loop()
 {
     thread_local double prevInstantInMs = 0.0;
-    
+
     const double thisInstant = emscripten_get_now();
-    const float deltaTimeInSeconds = static_cast<float>((thisInstant - prevInstantInMs) * 0.001); 
-    
+    const float deltaTimeInSeconds =
+        static_cast<float>((thisInstant - prevInstantInMs) * 0.001);
+
     gGameInstance->Update(deltaTimeInSeconds);
 
     gGameInstance->Render();

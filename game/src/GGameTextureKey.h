@@ -1,7 +1,5 @@
 #pragma once
 
-#include "GGameInstance.h"
-
 namespace galena {
 
 enum EGGameTextureKey
