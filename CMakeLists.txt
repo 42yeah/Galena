@@ -8,4 +8,8 @@ option(GALENA_BUILD_SAMPLES "Whether Galena should build samples" ON)
 option(GALENA_BUILD_GAME "Whether to build the game part of Galena" ON)
 
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/engine")
-add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/game")
+
+if (EMSCRIPTEN)
+    # As of right now, the game only supports WASM build
+    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/game")
+endif ()

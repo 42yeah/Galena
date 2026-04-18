@@ -1,13 +1,31 @@
-#include "Galena/GVersion.h"
+#include "GGameInstance.h"
+#include "GGameTextureKey.h"
+#include "Galena/GEngine.h"
+#include "Galena/GEngineDesc.h"
 
-#include <iostream>
+#include <memory>
 
 namespace galena {
 
-int main()
+std::unique_ptr<GGameInstance> GGameInstance::Create()
 {
-    std::cout << "Version: " << Version() << std::endl;
-    return 0;
+    GEngineDesc desc;
+    desc.textures[GGameTextureKeyMonde] = "assets/monde.png";
+
+    std::unique_ptr<GEngine> engine = GEngine::Create(std::move(desc));
+    
+    return std::make_unique<GGameInstance>(std::move(engine));
+}
+
+void GGameInstance::Update(float deltaTime)
+{
+    mDeltaTime = deltaTime;
+}
+
+void GGameInstance::Render()
+{
+    mEngine->Clear(1.0f, 0.0f, 0.0f, 1.0f);
+    mEngine->RenderDebugTriangle();
 }
 
 }  // namespace galena

@@ -30,7 +30,7 @@ void main()
 {
     /* Stolen shamelessly from the awesome crt-easymode:
        https://github.com/libretro/common-shaders/blob/master/crt/shaders/crt-easymode.cg
-     */
+    */
 
     vec2 texSize = vec2(textureSize(sampleTexture, 0));
 
