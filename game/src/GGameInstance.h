@@ -21,7 +21,8 @@ public:
     }
 
 public:
-    static std::unique_ptr<GGameInstance> Create();
+    static std::unique_ptr<GGameInstance> Create(
+        uint32_t initialWidth, uint32_t initialHeight);
 
 public:
     bool Update(float deltaTime);
@@ -32,7 +33,7 @@ public:
 
 private:
     bool UpdateControlObjectState();
-    
+
 private:
     GGameObject *ControlObject()
     {
@@ -41,7 +42,7 @@ private:
 
         return &mGameObjects[mControlIdx];
     }
-    
+
 private:
     const std::unique_ptr<GEngine> mEngine;
 

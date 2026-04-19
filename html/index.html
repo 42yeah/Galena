@@ -1,10 +1,12 @@
 <html>
     <head>
         <title>Galena</title>
+        <link rel="stylesheet" href="css/styles.css">
     </head>
     <body>
-        Hello, Galena!
-        <canvas id="canvas" width="400px" height="400px"></canvas>
+        <div class="viewport">
+            <canvas id="canvas" width="300px" height="300px"></canvas>
+        </div>
         <script>
          var Module = {
              locateFile: (path, prefix) => {
@@ -15,6 +17,7 @@
              }
          }
         </script>
+        <script src="js/entry.js"></script>
         <script src="js/wasm/Lounge.js"></script>
     </body>
 </html>

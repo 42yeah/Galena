@@ -77,13 +77,16 @@ bool GPostprocessRenderer::RenderPostprocessSimple(
     if (!pShader)
         return false;
 
+    const uint32_t renderWidth = mpEngineState->renderWidth;
+    const uint32_t renderHeight = mpEngineState->renderHeight;
+
     pShader->Bind([&] {
         pSrcTexture->BindAndActive(0, [&] {
             glUniform1i(pShader->Location("sampleTexture"), 0);
 
             mpEngineResources->QuadBuffer()->Bind([&] {
-                BindFramebufferOrPresent(
-                    pDstFramebuffer, [&] { glDrawArrays(GL_TRIANGLES, 0, 6); });
+                BindFramebufferOrPresent(pDstFramebuffer, renderWidth,
+                    renderHeight, [&] { glDrawArrays(GL_TRIANGLES, 0, 6); });
             });
         });
     });
@@ -149,13 +152,17 @@ bool GPostprocessRenderer::RenderPostprocessBloom(GFramebuffer *pDstFramebuffer,
             }
         });
 
+        const uint32_t renderWidth = mpEngineState->renderWidth;
+        const uint32_t renderHeight = mpEngineState->renderHeight;
+
         pBlendShader->Bind([&] {
             pSrcTexture->BindAndActive(0, [&] {
                 pCurrFramebuffer->FramebufferTexture()->BindAndActive(1, [&] {
                     glUniform1i(pBlendShader->Location("textureA"), 0);
                     glUniform1i(pBlendShader->Location("textureB"), 1);
 
-                    BindFramebufferOrPresent(pDstFramebuffer,
+                    BindFramebufferOrPresent(pDstFramebuffer, renderWidth,
+                        renderHeight,
                         [&] { glDrawArrays(GL_TRIANGLES, 0, 6); });
                 });
             });
@@ -184,7 +191,10 @@ bool GPostprocessRenderer::RenderPostprocessCRT(
         targetHeight = static_cast<float>(pDstFramebuffer->Height());
     }
 
-    BindFramebufferOrPresent(pDstFramebuffer, [&] {
+    const uint32_t renderWidth = mpEngineState->renderWidth;
+    const uint32_t renderHeight = mpEngineState->renderHeight;
+
+    BindFramebufferOrPresent(pDstFramebuffer, renderWidth, renderHeight, [&] {
         mpEngineResources->QuadBuffer()->Bind([&] {
             pCRTShader->Bind([&] {
                 pSrcTexture->BindAndActive(0, [&] {

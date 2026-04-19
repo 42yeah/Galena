@@ -96,29 +96,34 @@ bool GEngine::Render(const GRenderDesc &desc) const
 {
     bool isOk = true;
 
-    BindFramebufferOrPresent(desc.pDstFramebuffer, [&] {
-        if (desc.clearColor.has_value())
-        {
-            const GColor &color = *desc.clearColor;
+    const uint32_t renderWidth = mEngineState->renderWidth;
+    const uint32_t renderHeight = mEngineState->renderHeight;
 
-            glClearColor(color.r, color.g, color.b, color.a);
-            glClear(GL_COLOR_BUFFER_BIT);
-        }
+    BindFramebufferOrPresent(
+        desc.pDstFramebuffer, renderWidth, renderHeight, [&] {
+            if (desc.clearColor.has_value())
+            {
+                const GColor &color = *desc.clearColor;
 
-        uint32_t renderWidth = mEngineState->renderWidth;
-        uint32_t renderHeight = mEngineState->renderHeight;
+                glClearColor(color.r, color.g, color.b, color.a);
+                glClear(GL_COLOR_BUFFER_BIT);
+            }
 
-        if (desc.pDstFramebuffer)
-        {
-            renderWidth = desc.pDstFramebuffer->Width();
-            renderHeight = desc.pDstFramebuffer->Height();
-        }
+            uint32_t renderWidth = mEngineState->renderWidth;
+            uint32_t renderHeight = mEngineState->renderHeight;
 
-        for (const GRenderSpriteDesc &spriteDesc : desc.spriteDescs)
-        {
-            isOk = isOk && RenderSprite(renderWidth, renderHeight, spriteDesc);
-        }
-    });
+            if (desc.pDstFramebuffer)
+            {
+                renderWidth = desc.pDstFramebuffer->Width();
+                renderHeight = desc.pDstFramebuffer->Height();
+            }
+
+            for (const GRenderSpriteDesc &spriteDesc : desc.spriteDescs)
+            {
+                isOk =
+                    isOk && RenderSprite(renderWidth, renderHeight, spriteDesc);
+            }
+        });
 
     return isOk;
 }

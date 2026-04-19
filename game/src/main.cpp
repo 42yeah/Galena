@@ -1,6 +1,7 @@
 #include "GGameInstance.h"
 
 #include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
 #include <emscripten/html5_webgl.h>
 
 #include <iostream>
@@ -47,12 +48,25 @@ int32_t main()
 
     attrs.majorVersion = 2;
 
+    constexpr const char *const CanvasElement = "#canvas";
+
     EMSCRIPTEN_WEBGL_CONTEXT_HANDLE ctx =
-        emscripten_webgl_create_context("#canvas", &attrs);
+        emscripten_webgl_create_context(CanvasElement, &attrs);
 
     emscripten_webgl_make_context_current(ctx);
 
-    gGameInstance = GGameInstance::Create();
+    double canvasWidth = 0.0;
+    double canvasHeight = 0.0;
+
+    emscripten_get_element_css_size(CanvasElement, &canvasWidth, &canvasHeight);
+
+    const uint32_t uCanvasWidth = static_cast<uint32_t>(canvasWidth);
+    const uint32_t uCanvasHeight = static_cast<uint32_t>(canvasHeight);
+
+    emscripten_set_canvas_element_size(
+        CanvasElement, uCanvasWidth, uCanvasHeight);
+
+    gGameInstance = GGameInstance::Create(uCanvasWidth, uCanvasHeight);
 
     if (!gGameInstance)
     {

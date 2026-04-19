@@ -16,13 +16,14 @@
 
 namespace galena {
 
-std::unique_ptr<GGameInstance> GGameInstance::Create()
+std::unique_ptr<GGameInstance> GGameInstance::Create(
+    uint32_t initialWidth, uint32_t initialHeight)
 {
     GEngineDesc desc;
     desc.textures[GGameTextureKeyMonde] = "assets/monde.png";
 
     std::unique_ptr<GEngine> engine = GEngine::Create(std::move(desc));
-    engine->SetRenderSurfaceSize(300, 300);
+    engine->SetRenderSurfaceSize(initialWidth, initialHeight);
 
     return std::make_unique<GGameInstance>(std::move(engine));
 }
