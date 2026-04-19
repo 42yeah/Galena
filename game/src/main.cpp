@@ -16,13 +16,28 @@ void Loop()
 {
     thread_local double prevInstantInMs = 0.0;
 
-    const double thisInstant = emscripten_get_now();
+    const double thisInstantInMs = emscripten_get_now();
+
     const float deltaTimeInSeconds =
-        static_cast<float>((thisInstant - prevInstantInMs) * 0.001);
+        static_cast<float>((thisInstantInMs - prevInstantInMs) * 0.001);
+
+    prevInstantInMs = thisInstantInMs;
 
     gGameInstance->Update(deltaTimeInSeconds);
 
     gGameInstance->Render();
+}
+
+bool OnKeyDown(
+    int eventType, const EmscriptenKeyboardEvent *pKeyEvent, void *pUserData)
+{
+    return gGameInstance->UpdateInputState(pKeyEvent->keyCode, true);
+}
+
+bool OnKeyUp(
+    int eventType, const EmscriptenKeyboardEvent *pKeyEvent, void *pUserData)
+{
+    return gGameInstance->UpdateInputState(pKeyEvent->keyCode, false);
 }
 
 int32_t main()
@@ -44,6 +59,12 @@ int32_t main()
         std::cerr << "Failed to create game instance" << std::endl;
         return 1;
     }
+
+    emscripten_set_keydown_callback(
+        EMSCRIPTEN_EVENT_TARGET_WINDOW, nullptr, true, OnKeyDown);
+
+    emscripten_set_keyup_callback(
+        EMSCRIPTEN_EVENT_TARGET_WINDOW, nullptr, true, OnKeyUp);
 
     emscripten_set_main_loop(Loop, 30, true);
 
