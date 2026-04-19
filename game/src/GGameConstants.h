@@ -4,9 +4,9 @@
 
 namespace galena {
 
-constexpr float Acceleration = 3.0f;
+constexpr float Acceleration = 20.0f;
 constexpr float SpeedCap = 3.0f;
-constexpr float Friction = 3.0f;
+constexpr float Friction = 5.0f;
 
 constexpr uint32_t RenderSize = 32;
 constexpr uint32_t SpriteSize = 16;

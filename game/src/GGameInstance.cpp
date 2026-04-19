@@ -57,8 +57,8 @@ bool GGameInstance::Update(float deltaTime)
         float newX = oldX + vx0 * deltaTime;
         float newY = oldY + vy0 * deltaTime;
 
-        const float frictionX = Sign(vx);
-        const float frictionY = Sign(vy);
+        const float frictionX = Sign(vx) * Friction;
+        const float frictionY = Sign(vy) * Friction;
 
         float vx1 = vx0 - frictionX * deltaTime;
         float vy1 = vy0 - frictionY * deltaTime;
