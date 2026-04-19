@@ -6,3 +6,4 @@ compile_commands.json
 .clangd
 engine/src/external/*
 !engine/src/external/stb_image.h
+TAGS
