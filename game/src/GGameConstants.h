@@ -10,6 +10,7 @@ constexpr float Friction = 5.0f;
 
 constexpr uint32_t RenderSize = 32;
 constexpr uint32_t SpriteSize = 16;
+constexpr uint32_t FramebufferScale = 6;
 
 constexpr uint32_t SpritesPerRow = 10;
 

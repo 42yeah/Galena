@@ -36,6 +36,10 @@ bool GPostprocessRenderer::RenderPostprocess(GFramebuffer *pDstFramebuffer,
     case GPostprocessTypeCRT:
         return RenderPostprocessCRT(pDstFramebuffer, pTexture);
 
+    case GPostprocessTypeBlit:
+        return RenderPostprocessSimple(
+            pDstFramebuffer, pTexture, GShaderKeyBlit);
+
     default:
         return false;
     }

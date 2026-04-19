@@ -13,7 +13,8 @@ enum EGShaderKey
     GShaderKeyInvert,
     GShaderKeyGaussianBlur,
     GShaderKeyBlend,
-    GShaderKeyCRT
+    GShaderKeyCRT,
+    GShaderKeyBlit,
 };
 
 struct GShaderData

@@ -7,7 +7,9 @@
 #include "Galena/GEngine.h"
 #include "Galena/GEngineDesc.h"
 #include "Galena/GMath.h"
+#include "Galena/GPostprocess.h"
 #include "Galena/GRenderDesc.h"
+#include "Galena/GTextureSampler.h"
 
 #include <cstdint>
 #include <iostream>
@@ -22,10 +24,16 @@ std::unique_ptr<GGameInstance> GGameInstance::Create(
     GEngineDesc desc;
     desc.textures[GGameTextureKeyMonde] = "assets/monde.png";
 
+    const uint32_t fbWidth = initialWidth / FramebufferScale;
+    const uint32_t fbHeight = initialHeight / FramebufferScale;
+
     std::unique_ptr<GEngine> engine = GEngine::Create(std::move(desc));
     engine->SetRenderSurfaceSize(initialWidth, initialHeight);
 
-    return std::make_unique<GGameInstance>(std::move(engine));
+    GFramebuffer *pFramebuffer = engine->CreateFramebuffer(
+        fbWidth, fbHeight, GTextureFilterNearest, GTextureFilterNearest);
+
+    return std::make_unique<GGameInstance>(std::move(engine), pFramebuffer);
 }
 
 bool GGameInstance::Update(float deltaTime)
@@ -123,7 +131,7 @@ bool MakeRenderSpriteDesc(std::vector<GRenderSpriteDesc> &dstRenderSpriteDesc,
 bool GGameInstance::Render()
 {
     thread_local GRenderDesc renderDesc;
-    renderDesc.pDstFramebuffer = nullptr;
+    renderDesc.pDstFramebuffer = mpFramebuffer;
     renderDesc.clearColor = GColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     bool isOk = MakeRenderSpriteDesc(renderDesc.spriteDescs, mGameObjects);
@@ -139,6 +147,15 @@ bool GGameInstance::Render()
     if (!isOk)
     {
         std::cerr << "Failed to render" << std::endl;
+        return false;
+    }
+
+    isOk = mEngine->RenderPostprocess(
+        nullptr, mpFramebuffer, GPostprocessTypeCRT);
+
+    if (!isOk)
+    {
+        std::cerr << "Failed to postprocess" << std::endl;
         return false;
     }
 

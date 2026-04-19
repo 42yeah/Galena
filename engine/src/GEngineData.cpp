@@ -41,6 +41,11 @@ GEngineData GetEngineData()
     data.shaderData[GShaderKeyCRT] = GShaderData(
         GetCommonFramebuffer_vs(), GetCRT_fs(), std::move(crtUniforms));
 
+    std::vector<std::string> blitUniforms = {"sampleTexture"};
+
+    data.shaderData[GShaderKeyBlit] = GShaderData(
+        GetCommonFramebuffer_vs(), GetBlit_fs(), std::move(blitUniforms));
+
     return data;
 }
 

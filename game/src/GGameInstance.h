@@ -13,8 +13,8 @@ namespace galena {
 class GGameInstance
 {
 public:
-    GGameInstance(std::unique_ptr<GEngine> &&engine)
-        : mEngine(std::move(engine))
+    GGameInstance(std::unique_ptr<GEngine> &&engine, GFramebuffer *pFramebuffer)
+        : mEngine(std::move(engine)), mpFramebuffer(pFramebuffer)
     {
         GGameObject testGameObject(31, 0.0f, 0.0f, 1.0f, 1.0f);
         mGameObjects.emplace_back(testGameObject);  // Me
@@ -45,6 +45,7 @@ private:
 
 private:
     const std::unique_ptr<GEngine> mEngine;
+    GFramebuffer *const mpFramebuffer;
 
     std::vector<GGameObject> mGameObjects;
     uint32_t mControlIdx = 0;
