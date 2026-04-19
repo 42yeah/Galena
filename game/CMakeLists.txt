@@ -22,7 +22,7 @@ target_link_libraries(${GAME_EXECUTABLE_NAME} PRIVATE
 set(GAME_ARTIFACT_BASE "${CMAKE_CURRENT_BINARY_DIR}/${GAME_EXECUTABLE_NAME}")
 
 if (EMSCRIPTEN)
-    set(GAME_WASM_DEPLOY_DIR "${CMAKE_CURRENT_LIST_DIR}/../html/js")
+    set(GAME_WASM_DEPLOY_DIR "${CMAKE_CURRENT_LIST_DIR}/../html/js/wasm")
     
     target_link_options(${GAME_EXECUTABLE_NAME} PRIVATE
         --preload-file ${CMAKE_CURRENT_LIST_DIR}/../html/assets/monde.png@/assets/monde.png)

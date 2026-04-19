@@ -85,6 +85,7 @@ bool MakeRenderSpriteDesc(std::vector<GRenderSpriteDesc> &dstRenderSpriteDesc,
     // For each game object, extract the render sprite desc
 
     dstRenderSpriteDesc.reserve(gameObjects.size());
+    dstRenderSpriteDesc.clear();
 
     for (const GGameObject &gameObject : gameObjects)
     {
@@ -122,7 +123,7 @@ bool GGameInstance::Render()
 {
     thread_local GRenderDesc renderDesc;
     renderDesc.pDstFramebuffer = nullptr;
-    renderDesc.clearColor = GColor(1.0f, 0.0f, 0.0f, 1.0f);
+    renderDesc.clearColor = GColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     bool isOk = MakeRenderSpriteDesc(renderDesc.spriteDescs, mGameObjects);
 
