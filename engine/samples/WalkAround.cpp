@@ -1,6 +1,7 @@
 #include "Galena/GEngine.h"
 #include "Galena/GPostprocess.h"
 #include "Galena/GRenderDesc.h"
+#include "Galena/GTextureDesc.h"
 
 #include <bitset>
 #include <emscripten/em_types.h>
@@ -138,7 +139,10 @@ public:
     static std::unique_ptr<Game> Create()
     {
         GEngineDesc desc;
-        desc.textures[MondeTexture] = "assets/monde.png";
+
+        desc.textures[MondeTexture] = GTextureDesc("assets/monde.png",
+            GTextureFilterNearest, GTextureFilterNearest,
+            GTextureWrapModeRepeat, GTextureWrapModeRepeat);
 
         std::unique_ptr<GEngine> engine = GEngine::Create(desc);
         engine->SetRenderSurfaceSize(CanvasWidth, CanvasHeight);

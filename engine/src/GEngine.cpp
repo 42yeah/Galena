@@ -198,6 +198,10 @@ bool GEngine::RenderSprite(uint32_t renderWidth, uint32_t renderHeight,
     if (subsize.x == 0.0f || subsize.y == 0.0f)
         return false;
 
+    std::cout << position.x << ", " << position.y << ", " << subposition.x
+              << ", " << subposition.y << ", " << subsize.x << ", " << subsize.y
+              << std::endl;
+
     pShader->Bind([&] {
         glm::mat4 transform(1.0f);
 

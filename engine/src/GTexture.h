@@ -2,7 +2,7 @@
 
 #include "GImage.h"
 
-#include "Galena/GTextureSampler.h"
+#include "Galena/GTextureDesc.h"
 
 #include <GLES3/gl3.h>
 

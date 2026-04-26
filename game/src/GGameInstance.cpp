@@ -9,7 +9,7 @@
 #include "Galena/GMath.h"
 #include "Galena/GPostprocess.h"
 #include "Galena/GRenderDesc.h"
-#include "Galena/GTextureSampler.h"
+#include "Galena/GTextureDesc.h"
 
 #include <cstdint>
 #include <iostream>
@@ -22,7 +22,10 @@ std::unique_ptr<GGameInstance> GGameInstance::Create(
     uint32_t initialWidth, uint32_t initialHeight)
 {
     GEngineDesc desc;
-    desc.textures[GGameTextureKeyMonde] = "assets/monde.png";
+
+    desc.textures[GGameTextureKeyMonde] = GTextureDesc("assets/monde.png",
+        GTextureFilterNearest, GTextureFilterNearest, GTextureWrapModeRepeat,
+        GTextureWrapModeRepeat);
 
     const uint32_t fbWidth = initialWidth / FramebufferScale;
     const uint32_t fbHeight = initialHeight / FramebufferScale;
@@ -151,7 +154,7 @@ bool GGameInstance::Render()
     }
 
     isOk = mEngine->RenderPostprocess(
-        nullptr, mpFramebuffer, GPostprocessTypeCRT);
+        nullptr, mpFramebuffer, GPostprocessTypeBlit);
 
     if (!isOk)
     {

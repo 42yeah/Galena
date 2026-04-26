@@ -2,7 +2,7 @@
 #include "Galena/GEngineDesc.h"
 #include "Galena/GPostprocess.h"
 #include "Galena/GRenderDesc.h"
-#include "Galena/GTextureSampler.h"
+#include "Galena/GTextureDesc.h"
 
 #include <emscripten/fetch.h>
 #include <emscripten/html5.h>
@@ -156,7 +156,9 @@ int32_t main()
     GEngineDesc desc;
 
 #define GALENA_ITERATE_FUNC(name, path)                                        \
-    desc.textures[GSampleResource##name] = "/assets/" path;
+    desc.textures[GSampleResource##name] = GTextureDesc("/assets/" path,       \
+        GTextureFilterNearest, GTextureFilterNearest, GTextureWrapModeRepeat,  \
+        GTextureWrapModeRepeat);
 
     GALENA_ITERATE_RES(GALENA_ITERATE_FUNC)
 

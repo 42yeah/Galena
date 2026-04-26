@@ -5,6 +5,7 @@
 
 #include "GTexture.h"
 #include "Galena/GEngineDesc.h"
+#include "Galena/GTextureDesc.h"
 
 #include <memory>
 #include <unordered_map>
@@ -36,30 +37,32 @@ std::unique_ptr<GEngineResources> GEngineResources::Create(
 
     std::unordered_map<uint32_t, std::unique_ptr<GTexture>> textures;
 
-    for (const std::pair<uint32_t, const std::string &> texturePath :
-        desc.textures)
+    for (const std::pair<uint32_t, const GTextureDesc &> entry : desc.textures)
     {
-        std::unique_ptr<GImage> image = LoadImageFromPath(texturePath.second);
+        const uint32_t textureKey = entry.first;
+        const GTextureDesc &textureDesc = entry.second;
+
+        std::unique_ptr<GImage> image = LoadImageFromPath(textureDesc.path);
 
         if (!image)
         {
-            std::cerr << "Cannot load image from path: " << texturePath.second
+            std::cerr << "Cannot load image from path: " << textureDesc.path
                       << std::endl;
         }
 
-        std::unique_ptr<GTexture> texture = GTexture::Create(*image,
-            GTextureFilterNearest, GTextureFilterNearest,
-            GTextureWrapModeRepeat, GTextureWrapModeRepeat);
+        std::unique_ptr<GTexture> texture =
+            GTexture::Create(*image, textureDesc.minFilter,
+                textureDesc.magFilter, textureDesc.wrapS, textureDesc.wrapT);
 
         if (!texture)
         {
-            std::cerr << "Cannot create texture: " << texturePath.second
+            std::cerr << "Cannot create texture: " << textureDesc.path
                       << std::endl;
 
             continue;
         }
 
-        textures[texturePath.first] = std::move(texture);
+        textures[textureKey] = std::move(texture);
     }
 
     const float triangleData[] = {

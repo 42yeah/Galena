@@ -16,7 +16,7 @@ public:
     GGameInstance(std::unique_ptr<GEngine> &&engine, GFramebuffer *pFramebuffer)
         : mEngine(std::move(engine)), mpFramebuffer(pFramebuffer)
     {
-        GGameObject testGameObject(31, 0.0f, 0.0f, 1.0f, 1.0f);
+        GGameObject testGameObject(32, 0.0f, 0.0f, 1.0f, 1.0f);
         mGameObjects.emplace_back(testGameObject);  // Me
     }
 

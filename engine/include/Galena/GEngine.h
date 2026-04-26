@@ -3,7 +3,7 @@
 #include "GEngineDesc.h"
 #include "GPostprocess.h"
 #include "GRenderDesc.h"
-#include "GTextureSampler.h"
+#include "GTextureDesc.h"
 
 #include <memory>
 
